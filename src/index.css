@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Neue Haas Grotesk Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --color-cream: #faf8f5;
+  --color-ink: #0a0a0a;
+  --color-muted: #3d3d3d;
+  --color-label: #525252;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--color-ink);
+  background-color: var(--color-cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (min-width: 768px) {
+  .book-shoot-modal-anchor {
+    right: 8%;
+  }
+}
+
+.portfolio-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.portfolio-scroll::-webkit-scrollbar {
+  display: none;
+}
