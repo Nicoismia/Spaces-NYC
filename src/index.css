@@ -305,6 +305,7 @@ body {
     justify-content: center;
     gap: 0.5rem;
     margin-top: 8px;
+    margin-bottom: 12px;
     padding-top: 0;
   }
 
@@ -322,7 +323,7 @@ body {
   }
 
   .homepage .services-mobile-cta {
-    margin-top: 24px;
+    margin-top: 32px;
   }
 
   .homepage .portfolio-gallery .portfolio-scroll {
