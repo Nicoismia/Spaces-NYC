@@ -639,7 +639,9 @@ function PackagesSection({ packages }) {
     const container = scrollRef.current
     if (!container) return
 
-    const onScroll = () => {
+    const mobileQuery = window.matchMedia('(max-width: 768px)')
+
+    const updateActiveIndex = () => {
       const slides = container.querySelectorAll('.package-carousel-slide')
       if (!slides.length) return
 
@@ -659,12 +661,16 @@ function PackagesSection({ packages }) {
       setActiveIndex(closest)
     }
 
-    onScroll()
+    const onScroll = () => {
+      if (!mobileQuery.matches) updateActiveIndex()
+    }
+
+    updateActiveIndex()
     container.addEventListener('scroll', onScroll, { passive: true })
-    container.addEventListener('scrollend', onScroll, { passive: true })
+    container.addEventListener('scrollend', updateActiveIndex, { passive: true })
     return () => {
       container.removeEventListener('scroll', onScroll)
-      container.removeEventListener('scrollend', onScroll)
+      container.removeEventListener('scrollend', updateActiveIndex)
     }
   }, [packages.length])
 
