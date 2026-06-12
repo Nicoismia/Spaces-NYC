@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import AboutPage from './AboutPage'
 import App from './App'
+import { TallyPopupProvider } from './TallyPopup'
 
 function getPath() {
   return window.location.pathname.replace(/\/+$/, '') || '/'
@@ -19,6 +20,9 @@ export default function Router() {
     window.scrollTo(0, 0)
   }, [path])
 
-  if (path === '/about') return <AboutPage />
-  return <App />
+  return (
+    <TallyPopupProvider>
+      {path === '/about' ? <AboutPage /> : <App />}
+    </TallyPopupProvider>
+  )
 }

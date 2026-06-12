@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion'
+import { spacesBtn, typeBtnShadow, typeBtnSize } from './buttons'
+import { COMPANY_EMAIL_DISPLAY, companyMailto } from './contact'
 import SiteHeader from './SiteHeader'
+import { useTallyPopup } from './TallyPopup'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -13,9 +16,7 @@ const typeSectionH2 =
 const typeBody = 'font-sans text-[17px] font-normal leading-relaxed md:text-[19px]'
 const typeBodySm = 'font-sans text-sm font-normal leading-relaxed'
 const typeLabel = 'font-sans text-xs font-medium tracking-[0.2em] uppercase'
-const typeBtn = 'inline-flex items-center gap-2.5 font-sans text-sm font-semibold transition-all duration-300'
-const typeBtnSize = 'px-7 py-3.5'
-const typeBtnShadow = 'shadow-[0_4px_18px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.28)]'
+const typeBtn = spacesBtn
 
 const WHAT_WE_DO = [
   {
@@ -97,6 +98,8 @@ const aboutIntroBodyGrid = 'mt-4 grid grid-cols-1 items-center gap-8 lg:mt-5 lg:
 const aboutEditorialGrid = 'grid grid-cols-1 items-center gap-8 lg:grid-cols-5 lg:gap-10'
 
 export default function AboutPage() {
+  const { openTallyPopup } = useTallyPopup()
+
   return (
     <div className="min-h-screen bg-cream font-sans font-normal text-ink antialiased">
       <SiteHeader variant="about" />
@@ -224,8 +227,7 @@ export default function AboutPage() {
           <button
             type="button"
             className={`${typeBtn} ${typeBtnSize} ${typeBtnShadow} bg-ink text-white tracking-[0.15em] uppercase hover:bg-neutral-800`}
-            data-tally-open="MeV82g"
-            data-tally-overlay="1"
+            onClick={(event) => openTallyPopup(event.currentTarget)}
           >
             Request a Shoot
             <IconArrowRight className="w-4 h-4" />
@@ -281,8 +283,8 @@ export default function AboutPage() {
                   </a>
                 </li>
                 <li>
-                  <a href="mailto:hello@spacesnyc.com" className="transition-colors hover:text-white">
-                    hello@spacesnyc.com
+                  <a href={companyMailto} className="transition-colors hover:text-white">
+                    {COMPANY_EMAIL_DISPLAY}
                   </a>
                 </li>
                 <li>New York City</li>
@@ -291,7 +293,7 @@ export default function AboutPage() {
                 <a href="#" aria-label="Instagram" className="text-white/65 transition-colors hover:text-white">
                   <IconInstagram />
                 </a>
-                <a href="mailto:hello@spacesnyc.com" aria-label="Email" className="text-white/65 transition-colors hover:text-white">
+                <a href={companyMailto} aria-label="Email" className="text-white/65 transition-colors hover:text-white">
                   <IconMail />
                 </a>
               </div>
