@@ -577,15 +577,10 @@ function HeroFeatureBar({ features }) {
 
 function PackageCard({ pkg, index, className = '' }) {
   return (
-    <motion.article
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-40px' }}
-      variants={fadeUp}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -6 }}
-      className={`package-card group relative flex h-full min-h-[420px] flex-col rounded-2xl border border-[#e5e5e5] bg-white p-6 transition-shadow duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] lg:p-7 ${className}`}
-    >
+    <FadeIn delay={index * 0.1} className="h-full">
+      <article
+        className={`package-card group relative flex h-full min-h-[420px] flex-col rounded-2xl border border-[#e5e5e5] bg-white p-6 lg:p-7 ${className}`}
+      >
       {pkg.popular && (
         <span className={`package-card__badge absolute right-5 top-5 hidden bg-ink px-3 py-1.5 text-white md:inline-block ${typeLabel}`}>
           MOST POPULAR
@@ -615,7 +610,8 @@ function PackageCard({ pkg, index, className = '' }) {
           <p className={`text-muted ${typeBodySm}`}>{pkg.useCase}</p>
         </div>
       </div>
-    </motion.article>
+      </article>
+    </FadeIn>
   )
 }
 
@@ -674,31 +670,32 @@ function PackagesSection({ packages }) {
 
   return (
     <section id="services" className="services-section bg-cream px-6 pt-20 pb-16 md:px-10 lg:pt-24 lg:pb-20">
-      <FadeIn>
-        <div className="services-header mx-auto mb-20 max-w-[1200px]">
-          <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-            <div className="min-w-0">
-              <SectionHeadline>
-                Simple packages.
-                <br />
-                Everything you need.
-              </SectionHeadline>
+      <div className="services-section__inner mx-auto w-full max-w-[1200px]">
+        <FadeIn>
+          <div className="services-header mb-20">
+            <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+              <div className="min-w-0">
+                <SectionHeadline>
+                  Simple packages.
+                  <br />
+                  Everything you need.
+                </SectionHeadline>
+              </div>
+              <ServicesTallyButton
+                className={`services-header__cta ${servicesTallyBtnClass} hidden shrink-0 self-start md:inline-flex md:self-auto`}
+              >
+                Check Availability
+                <IconArrowRight className="w-4 h-4" />
+              </ServicesTallyButton>
             </div>
-            <ServicesTallyButton
-              className={`services-header__cta ${servicesTallyBtnClass} hidden shrink-0 self-start md:inline-flex md:self-auto`}
-            >
-              Check Availability
-              <IconArrowRight className="w-4 h-4" />
-            </ServicesTallyButton>
           </div>
-        </div>
-      </FadeIn>
+        </FadeIn>
 
-      <div className="services-packages mx-auto max-w-[1200px]">
-        <div
-          ref={scrollRef}
-          className="package-carousel package-grid grid grid-cols-1 gap-8 md:grid-cols-3"
-        >
+        <div className="services-packages">
+          <div
+            ref={scrollRef}
+            className="package-carousel package-grid grid grid-cols-1 gap-8 md:grid-cols-3"
+          >
           {packages.map((pkg, i) => (
             <div key={pkg.title} className={`package-carousel-slide${i === activeIndex ? ' is-active' : ''}`}>
               {pkg.popular && (
@@ -711,10 +708,11 @@ function PackagesSection({ packages }) {
           ))}
         </div>
 
-        <div className="package-carousel-dots" aria-hidden="true">
-          {packages.map((pkg, i) => (
-            <span key={pkg.title} className={i === activeIndex ? 'is-active' : undefined} />
-          ))}
+          <div className="package-carousel-dots" aria-hidden="true">
+            {packages.map((pkg, i) => (
+              <span key={pkg.title} className={i === activeIndex ? 'is-active' : undefined} />
+            ))}
+          </div>
         </div>
       </div>
 
