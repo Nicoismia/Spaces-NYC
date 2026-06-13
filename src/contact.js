@@ -10,3 +10,5 @@ export const companyMailto = `mailto:${COMPANY_EMAIL}`
 export const COMPANY_PHONE_DISPLAY = '(XXX) XXX-XXXX'
 
 export const companyTel = 'tel:+1XXXXXXXXXX'
+
+export const companySms = 'sms:+1XXXXXXXXXX'

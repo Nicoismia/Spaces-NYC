@@ -11,6 +11,7 @@ import {
   companyTel,
 } from './contact'
 import { useTallyPopup } from './TallyPopup'
+import { useContactModal } from './ContactModal'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -138,6 +139,14 @@ function IconMail({ className = 'w-5 h-5' }) {
   )
 }
 
+function IconPhone({ className = 'w-5 h-5' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+  )
+}
+
 function IconX({ className = 'w-4 h-4' }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -239,11 +248,7 @@ function HeroTallyButton({ className = '' }) {
   const buttonRef = useRef(null)
   const [ripples, setRipples] = useState([])
   const [isBouncing, setIsBouncing] = useState(false)
-  const [hovered, setHovered] = useState(false)
-  const classNames = `${typeBtn} ${typeBtnSize} relative overflow-visible select-none tracking-[0.15em] uppercase bg-white text-ink ${typeBtnShadowLight} ${className}`
-
-  const defaultShadow = '0 4px 18px rgba(0,0,0,0.14)'
-  const hoverShadow = '0 8px 24px rgba(0,0,0,0.12)'
+  const classNames = `${typeBtn} ${typeBtnSize} hero-tally-btn spaces-btn relative overflow-visible select-none tracking-[0.04em] text-white ${className}`
 
   const handlePress = () => {
     if (!shouldReduceMotion) {
@@ -263,28 +268,16 @@ function HeroTallyButton({ className = '' }) {
       ref={buttonRef}
       type="button"
       className={classNames}
-      onHoverStart={() => !shouldReduceMotion && setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
       onClick={handlePress}
       animate={
-          shouldReduceMotion
-            ? undefined
-            : isBouncing
-              ? {
-                  y: hovered ? -2 : 0,
-                  scale: [hovered ? 1.04 : 1, 0.94, 1.06, hovered ? 1.04 : 1],
-                  boxShadow: hovered ? hoverShadow : defaultShadow,
-                }
-              : hovered
-                ? { y: -2, scale: 1.04, boxShadow: hoverShadow }
-                : { y: 0, scale: 1, boxShadow: defaultShadow }
-        }
+        shouldReduceMotion || !isBouncing
+          ? undefined
+          : { scale: [1, 0.96, 1.02, 1] }
+      }
       transition={
         shouldReduceMotion
           ? undefined
-          : isBouncing
-            ? { duration: 0.4, times: [0, 0.15, 0.55, 1], ease: [0.34, 1.45, 0.64, 1] }
-            : { duration: 0.25, ease: 'easeOut' }
+          : { duration: 0.35, times: [0, 0.2, 0.6, 1], ease: [0.34, 1.45, 0.64, 1] }
       }
     >
       {!shouldReduceMotion &&
@@ -292,41 +285,30 @@ function HeroTallyButton({ className = '' }) {
           <motion.span
             key={id}
             aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-[inherit] border border-ink/30"
+            className="pointer-events-none absolute inset-0 rounded-[inherit] border border-white/35"
             initial={{ scale: 1, opacity: 0.6 }}
             animate={{ scale: 2.4, opacity: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
           />
         ))}
-      REQUEST A SHOOT
-      <motion.span
-        className="inline-flex shrink-0"
-        animate={shouldReduceMotion ? undefined : { x: hovered ? 4 : 0 }}
-        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <IconArrowRight className="w-4 h-4" />
-      </motion.span>
+      Schedule a Shoot
+      <IconArrowRight className="shrink-0 text-white" />
     </motion.button>
   )
 }
 
-function BookButton({ variant = 'dark', className = '', tally = false }) {
-  const styles =
-    variant === 'dark'
-      ? `bg-ink text-white ${typeBtnShadow}`
-      : `bg-white text-ink ${typeBtnShadowLight}`
-
-  const classNames = `${typeBtn} ${typeBtnSize} select-none tracking-[0.15em] uppercase ${styles} ${className}`
-
-  if (tally) {
-    return <HeroTallyButton className={className} />
-  }
+function HeroContactButton({ className = '' }) {
+  const { openContactModal } = useContactModal()
 
   return (
-    <div role="presentation" className={classNames}>
-      REQUEST A SHOOT
-      <IconArrowRight className="w-4 h-4" />
-    </div>
+    <button
+      type="button"
+      onClick={openContactModal}
+      className={`${typeBtn} ${typeBtnSize} spaces-btn inline-flex items-center select-none border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-[transform,box-shadow,background-color,border-color] duration-[250ms] hover:border-white/40 hover:bg-white/15 ${className}`}
+    >
+      Let&apos;s Talk
+      <IconPhone />
+    </button>
   )
 }
 
@@ -513,7 +495,9 @@ function HeroFeatureBar({ features }) {
     const container = scrollRef.current
     if (!container) return
 
-    const onScroll = () => {
+    const mobileQuery = window.matchMedia('(max-width: 768px)')
+
+    const updateActiveIndex = () => {
       const cards = container.querySelectorAll('.hero-info-card')
       if (!cards.length) return
 
@@ -533,12 +517,16 @@ function HeroFeatureBar({ features }) {
       setActiveIndex(closest)
     }
 
-    onScroll()
+    const onScroll = () => {
+      if (!mobileQuery.matches) updateActiveIndex()
+    }
+
+    updateActiveIndex()
     container.addEventListener('scroll', onScroll, { passive: true })
-    container.addEventListener('scrollend', onScroll, { passive: true })
+    container.addEventListener('scrollend', updateActiveIndex, { passive: true })
     return () => {
       container.removeEventListener('scroll', onScroll)
-      container.removeEventListener('scrollend', onScroll)
+      container.removeEventListener('scrollend', updateActiveIndex)
     }
   }, [features.length])
 
@@ -577,39 +565,37 @@ function HeroFeatureBar({ features }) {
 
 function PackageCard({ pkg, index, className = '' }) {
   return (
-    <FadeIn delay={index * 0.1} className="h-full">
+    <FadeIn delay={index * 0.1} className="h-full w-full">
       <article
-        className={`package-card group relative flex h-full min-h-[420px] flex-col rounded-2xl border border-[#e5e5e5] bg-white p-6 lg:p-7 ${className}`}
+        className={`package-card group relative flex w-full flex-col ${className}`}
       >
-      {pkg.popular && (
-        <span className={`package-card__badge absolute right-5 top-5 hidden bg-ink px-3 py-1.5 text-white md:inline-block ${typeLabel}`}>
-          MOST POPULAR
-        </span>
-      )}
-
-      <div className="package-card__title min-h-[5.5rem] min-w-0 md:pr-24">
-        <p className={`${typeCardTitle} text-label`}>{pkg.title}</p>
-      </div>
-
-      <p className="package-card__price mt-2 font-sans text-4xl font-medium tracking-tight text-ink lg:text-5xl">{pkg.price}</p>
-
-      <div className="package-card__divider my-5 border-t border-[#e5e5e5]" />
-
-      <div className="package-card__body flex min-h-0 flex-1 flex-col">
-        <p className={`package-card__includes mb-3 ${typeLabel} text-label`}>Includes</p>
-        <ul className="package-card__list min-h-[7.5rem] flex-1 space-y-2.5">
-          {pkg.features.map((f) => (
-            <li key={f} className="flex min-w-0 items-start gap-3">
-              <IconCheck className="mt-0.5 size-4 shrink-0 text-ink" />
-              <span className={`min-w-0 text-muted ${typeBodySm}`}>{f}</span>
-            </li>
-          ))}
-        </ul>
-
-        <div className="package-card__footer mt-auto border-t border-[#e5e5e5] pt-4">
-          <p className={`text-muted ${typeBodySm}`}>{pkg.useCase}</p>
+        <div className="package-card__title min-w-0">
+          <p className={`${typeCardTitle} text-label`}>{pkg.title}</p>
         </div>
-      </div>
+
+        <p className="package-card__price font-sans text-4xl font-medium tracking-tight text-ink lg:text-5xl">{pkg.price}</p>
+
+        <div className="package-card__divider border-t border-[rgba(0,0,0,0.08)]" />
+
+        <div className="package-card__bottom flex min-h-0 flex-1 flex-col">
+          <div className="package-card__content">
+            <p className={`package-card__includes ${typeLabel} text-label`}>Includes</p>
+            <ul className="package-card__list">
+              {pkg.features.map((f) => (
+                <li key={f} className="flex min-w-0 items-start gap-3">
+                  <IconCheck className="mt-0.5 size-4 shrink-0 text-ink" />
+                  <span className={`min-w-0 text-muted ${typeBodySm}`}>{f}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="package-card__footer shrink-0 border-t border-[rgba(0,0,0,0.08)]">
+            <p className={`text-muted ${typeBodySm}`}>{pkg.useCase}</p>
+          </div>
+
+          <div aria-hidden="true" className="package-card__tail min-h-0 flex-1" />
+        </div>
       </article>
     </FadeIn>
   )
@@ -704,11 +690,16 @@ function PackagesSection({ packages }) {
           >
           {packages.map((pkg, i) => (
             <div key={pkg.title} className={`package-carousel-slide${i === activeIndex ? ' is-active' : ''}`}>
-              {pkg.popular && (
-                <span className={`package-carousel-badge bg-ink px-3 py-1.5 text-white ${typeLabel}`}>
+              <div className="package-badge-slot">
+                <span
+                  className={`package-carousel-badge ${typeLabel} ${
+                    pkg.popular ? 'package-carousel-badge--visible bg-ink text-white' : 'package-carousel-badge--placeholder'
+                  }`}
+                  aria-hidden={!pkg.popular}
+                >
                   MOST POPULAR
                 </span>
-              )}
+              </div>
               <PackageCard pkg={pkg} index={i} className="package-carousel-card" />
             </div>
           ))}
@@ -768,8 +759,9 @@ export default function App() {
             <p className={`mb-8 max-w-lg text-white/90 ${typeBody}`}>
               Premium photography, Matterport tours, and fast turnaround for NYC real estate professionals.
             </p>
-            <div className="hero-cta-row flex flex-wrap items-start gap-4">
-              <BookButton variant="light" tally />
+            <div className="hero-cta-row flex flex-wrap items-center gap-4">
+              <HeroTallyButton />
+              <HeroContactButton />
             </div>
           </FadeIn>
         </div>
