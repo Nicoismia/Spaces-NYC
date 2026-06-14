@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { spacesBtnIcon } from './buttons'
 import { NAV_LINKS, navHref } from './nav'
+import { handleHomeSectionNav, isHomepageSectionHref, sectionIdFromHref } from './scrollToSection'
 import { useHideOnScroll } from './useHideOnScroll'
 
 const typeNav = 'font-sans text-sm font-medium tracking-[0.15em] uppercase'
@@ -54,6 +55,19 @@ export default function SiteHeader({ variant = 'about' }) {
 
   const navLinkClass = isHome ? 'text-white/95 hover:text-white' : 'text-ink/80 hover:text-ink'
 
+  const closeMenu = () => setMenuOpen(false)
+
+  const handleNavClick = (event, link) => {
+    const href = navHref(link)
+
+    if (isHome && isHomepageSectionHref(href)) {
+      handleHomeSectionNav(event, sectionIdFromHref(href), { onAfterNavigate: closeMenu })
+      return
+    }
+
+    closeMenu()
+  }
+
   return (
     <header
       className={[
@@ -81,6 +95,7 @@ export default function SiteHeader({ variant = 'about' }) {
             href={navHref(link)}
             className={`${typeNav} transition-colors ${navLinkClass}`}
             aria-current={link === 'ABOUT' && !isHome ? 'page' : undefined}
+            onClick={(event) => handleNavClick(event, link)}
           >
             {link}
           </a>
@@ -107,7 +122,7 @@ export default function SiteHeader({ variant = 'about' }) {
                 key={link}
                 href={navHref(link)}
                 className={`${typeNav} border-b border-white/10 py-4 text-white/95 transition-colors last:border-b-0 hover:text-white`}
-                onClick={() => setMenuOpen(false)}
+                onClick={(event) => handleNavClick(event, link)}
               >
                 {link}
               </a>

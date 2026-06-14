@@ -11,7 +11,8 @@ import {
   companyTel,
 } from './contact'
 import { useTallyPopup } from './TallyPopup'
-import { useContactModal } from './ContactModal'
+import { CONTACT_HASH, CONTACT_SECTION_ID, FOOTER_COMPANY_LINKS } from './siteMap'
+import { handleHomeSectionNav } from './scrollToSection'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -187,11 +188,11 @@ const PACKAGES = [
 ]
 
 const PORTFOLIO = [
-  { title: 'Tribeca Penthouse', image: '/hero-loft.jpg' },
-  { title: 'Chelsea Loft', image: '/portfolio/dumbo.jpg' },
-  { title: 'Upper East Side Residence', image: '/portfolio/dumbo-alt.jpg' },
-  { title: 'Williamsburg Condo', image: '/hero-loft.jpg' },
-  { title: 'West Village Apartment', image: '/portfolio/dumbo.jpg' },
+  { title: 'Tribeca Penthouse', image: '/portfolio/tribeca.jpg' },
+  { title: 'Chelsea Loft', image: '/portfolio/chelsea.jpg' },
+  { title: 'Upper East Side Residence', image: '/portfolio/ues.jpg' },
+  { title: 'Williamsburg Condo', image: '/portfolio/williamsburg.jpg' },
+  { title: 'West Village Apartment', image: '/portfolio/west-village.jpg' },
   { title: 'DUMBO Penthouse', image: '/portfolio/dumbo-alt.jpg' },
 ]
 
@@ -298,17 +299,15 @@ function HeroTallyButton({ className = '' }) {
 }
 
 function HeroContactButton({ className = '' }) {
-  const { openContactModal } = useContactModal()
-
   return (
-    <button
-      type="button"
-      onClick={openContactModal}
+    <a
+      href={CONTACT_HASH}
+      onClick={(event) => handleHomeSectionNav(event, CONTACT_SECTION_ID)}
       className={`${typeBtn} ${typeBtnSize} spaces-btn inline-flex items-center select-none border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-[transform,box-shadow,background-color,border-color] duration-[250ms] hover:border-white/40 hover:bg-white/15 ${className}`}
     >
       Let&apos;s Talk
       <IconPhone />
-    </button>
+    </a>
   )
 }
 
@@ -412,8 +411,10 @@ function PortfolioGallery({ items }) {
     const card = container.querySelector('[data-portfolio-card]')
     if (!card) return
 
+    const gap = Number.parseFloat(getComputedStyle(container).columnGap || getComputedStyle(container).gap) || 20
+
     container.scrollBy({
-      left: direction * (card.offsetWidth + 20),
+      left: direction * (card.offsetWidth + gap),
       behavior: 'smooth',
     })
   }
@@ -429,49 +430,48 @@ function PortfolioGallery({ items }) {
   }
 
   return (
-    <div className="portfolio-gallery relative mx-auto max-w-[1200px]">
-      <button
-        type="button"
-        onClick={() => scrollByCard(-1)}
-        aria-label="Scroll portfolio left"
-        className={`${spacesBtnIcon} spaces-btn-icon--centered absolute -left-3 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 border border-[#e5e5e5] bg-white text-ink shadow-[0_4px_18px_rgba(0,0,0,0.08)] hover:bg-neutral-50 md:flex lg:-left-5`}
-      >
-        <IconArrowRight className="h-4 w-4 rotate-180" />
-      </button>
+    <div className="portfolio-gallery relative mx-auto w-full max-w-[1360px]">
+      <div className="portfolio-gallery__track relative">
+        <button
+          type="button"
+          onClick={() => scrollByCard(-1)}
+          aria-label="Scroll portfolio left"
+          className={`portfolio-gallery__arrow ${spacesBtnIcon} spaces-btn-icon--centered absolute left-2 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 border border-[#e5e5e5] bg-white text-ink shadow-[0_4px_18px_rgba(0,0,0,0.08)] hover:bg-neutral-50 md:flex lg:left-0`}
+        >
+          <IconArrowRight className="h-4 w-4 rotate-180" />
+        </button>
 
-      <button
-        type="button"
-        onClick={() => scrollByCard(1)}
-        aria-label="Scroll portfolio right"
-        className={`${spacesBtnIcon} spaces-btn-icon--centered absolute -right-3 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 border border-[#e5e5e5] bg-white text-ink shadow-[0_4px_18px_rgba(0,0,0,0.08)] hover:bg-neutral-50 md:flex lg:-right-5`}
-      >
-        <IconArrowRight className="h-4 w-4" />
-      </button>
+        <button
+          type="button"
+          onClick={() => scrollByCard(1)}
+          aria-label="Scroll portfolio right"
+          className={`portfolio-gallery__arrow ${spacesBtnIcon} spaces-btn-icon--centered absolute right-2 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 border border-[#e5e5e5] bg-white text-ink shadow-[0_4px_18px_rgba(0,0,0,0.08)] hover:bg-neutral-50 md:flex lg:right-0`}
+        >
+          <IconArrowRight className="h-4 w-4" />
+        </button>
 
-      <div
-        ref={scrollRef}
-        className="portfolio-scroll flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-2"
-      >
-        {items.map((item, index) => (
-          <button
-            key={item.title}
-            type="button"
-            data-portfolio-card
-            onClick={() => setLightboxIndex(index)}
-            className="group relative aspect-[4/3] w-full shrink-0 snap-start overflow-hidden rounded-xl bg-neutral-100 md:w-[calc(50%-10px)] lg:w-[calc(25%-15px)]"
-          >
-            <img
-              src={item.image}
-              alt={item.title}
-              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-              loading="lazy"
-            />
-            <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/30" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/75 to-transparent p-5 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-              <p className={`${typeCardTitle} text-white`}>{item.title}</p>
-            </div>
-          </button>
-        ))}
+        <div ref={scrollRef} className="portfolio-scroll flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
+          {items.map((item, index) => (
+            <button
+              key={item.title}
+              type="button"
+              data-portfolio-card
+              onClick={() => setLightboxIndex(index)}
+              className="group relative shrink-0 snap-center overflow-hidden rounded-[14px] bg-neutral-100"
+            >
+              <img
+                src={item.image}
+                alt={item.title}
+                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] md:group-hover:scale-[1.04]"
+                loading="lazy"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/25" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/75 to-transparent p-5 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                <p className={`${typeCardTitle} text-white`}>{item.title}</p>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
       {lightboxIndex !== null && (
@@ -661,13 +661,13 @@ function PackagesSection({ packages }) {
   }, [packages.length])
 
   return (
-    <section id="services" className="services-section bg-cream px-6 pt-20 pb-16 md:px-10 lg:pt-24 lg:pb-20">
+    <section id="services" className="services-section bg-cream px-6 pt-20 pb-10 md:px-10 md:pb-12 lg:pt-24 lg:pb-14">
       <div className="services-section__inner mx-auto w-full max-w-[1200px]">
         <FadeIn>
           <div className="services-header mb-20">
             <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
               <div className="min-w-0">
-                <SectionHeadline>
+                <SectionHeadline className="section-headline--mobile">
                   Simple packages.
                   <br />
                   Everything you need.
@@ -772,9 +772,11 @@ export default function App() {
       <PackagesSection packages={PACKAGES} />
 
       {/* ── Recent Work ── */}
-      <section id="portfolio" className="bg-cream px-6 pb-20 md:px-10 lg:pb-28">
-        <FadeIn className="mx-auto mb-20 max-w-[1200px]">
-          <SectionHeadline className="mb-6">Real spaces. Real results.</SectionHeadline>
+      <section id="portfolio" className="portfolio-section bg-cream px-6 pb-20 pt-8 md:px-10 md:pt-10 lg:pb-28">
+        <FadeIn className="portfolio-section__header mx-auto mb-10 max-w-[1360px] md:mb-12 lg:mb-14">
+          <SectionHeadline className="section-headline--mobile portfolio-section__headline mb-5">
+            Real spaces. Real results.
+          </SectionHeadline>
           <p className={`max-w-xl text-muted ${typeBody}`}>
             Space, light, and layout — the way top NYC brokers present every property.
           </p>
@@ -783,61 +785,57 @@ export default function App() {
         <PortfolioGallery items={PORTFOLIO} />
       </section>
 
-      {/* ── Contact ── */}
-      <section id="contact" className="bg-cool-gray px-6 py-16 md:px-10 lg:py-20">
-        <FadeIn className="mx-auto max-w-[1200px]">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16 lg:items-start">
-            <div className="min-w-0">
-              <SectionHeadline>Let&apos;s Talk</SectionHeadline>
-              <p className={`mt-5 max-w-md text-muted ${typeBody}`}>
-                Need photography, Matterport, floor plans, or video for a listing? Reach out and we&apos;ll help you
-                find the right service.
-              </p>
-            </div>
-
-            <div className="min-w-0">
-              <div className="space-y-5">
-                <div>
-                  <p className={`mb-1.5 ${typeLabel} text-label`}>Email</p>
-                  <a
-                    href={companyMailto}
-                    className={`text-ink transition-colors hover:text-muted ${typeBody}`}
-                  >
-                    {COMPANY_EMAIL}
-                  </a>
+      {/* ── Contact + Footer — continuous dark closing section ── */}
+      <div className="site-closing">
+        <section id={CONTACT_SECTION_ID} className="contact-section px-6 pt-16 pb-10 md:px-10 lg:pt-20 lg:pb-12" aria-label="Let's Talk">
+          <FadeIn>
+            <div className="contact-inner mx-auto max-w-[1200px]">
+              <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16 lg:items-start">
+                <div className="min-w-0">
+                  <SectionHeadline className="contact-section__title">Let&apos;s Talk</SectionHeadline>
+                  <p className={`contact-section__copy mt-5 max-w-md ${typeBody}`}>
+                    Need photography, Matterport, floor plans, or video for a listing? Reach out and we&apos;ll help you
+                    find the right service.
+                  </p>
                 </div>
-                <div>
-                  <p className={`mb-1.5 ${typeLabel} text-label`}>Phone</p>
-                  <a
-                    href={companyTel}
-                    className={`text-ink transition-colors hover:text-muted ${typeBody}`}
-                  >
-                    {COMPANY_PHONE_DISPLAY}
-                  </a>
+
+                <div className="min-w-0">
+                  <div className="space-y-5">
+                    <div>
+                      <p className="contact-section__label mb-1.5">Email</p>
+                      <a href={companyMailto} className={`contact-section__value transition-colors ${typeBody}`}>
+                        {COMPANY_EMAIL}
+                      </a>
+                    </div>
+                    <div>
+                      <p className="contact-section__label mb-1.5">Phone</p>
+                      <a href={companyTel} className={`contact-section__value transition-colors ${typeBody}`}>
+                        {COMPANY_PHONE_DISPLAY}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 flex flex-col gap-3">
+                    <a
+                      href={companyMailto}
+                      className={`${typeBtn} ${typeBtnSize} hero-tally-btn contact-section__btn w-full justify-center`}
+                    >
+                      Email Us
+                    </a>
+                    <a
+                      href={companyTel}
+                      className={`${typeBtn} ${typeBtnSize} contact-section__btn contact-section__btn--call w-full justify-center`}
+                    >
+                      Call Us
+                    </a>
+                  </div>
                 </div>
               </div>
-
-              <div className="mt-8 flex flex-col gap-3">
-                <a
-                  href={companyMailto}
-                  className={`${typeBtn} ${typeBtnSize} ${typeBtnShadow} w-full justify-center bg-ink text-white hover:bg-neutral-800`}
-                >
-                  Email Us
-                </a>
-                <a
-                  href={companyTel}
-                  className={`${typeBtn} ${typeBtnSize} w-full justify-center border border-[#d0d1d2] bg-white text-ink ${typeBtnShadowLight} hover:bg-white/90`}
-                >
-                  Call Us
-                </a>
-              </div>
             </div>
-          </div>
-        </FadeIn>
-      </section>
+          </FadeIn>
+        </section>
 
-      {/* ── Footer ── */}
-      <footer className="bg-ink px-6 py-16 text-white md:px-10 lg:px-16">
+        <footer className="site-footer px-6 pb-16 text-white md:px-10 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div>
@@ -865,15 +863,10 @@ export default function App() {
                 Company
               </SectionLabel>
               <ul className="space-y-2.5">
-                {[
-                  { label: 'About', href: '/about' },
-                  { label: 'Portfolio', href: '#portfolio' },
-                  { label: 'FAQ', href: '#faq' },
-                  { label: 'Contact', href: '#contact' },
-                ].map((item) => (
+                {FOOTER_COMPANY_LINKS.map((item) => (
                   <li key={item.label}>
                     <a
-                      href={item.href}
+                      href={item.homeHref}
                       className={`text-white/80 transition-colors hover:text-white ${typeBodySm}`}
                     >
                       {item.label}
@@ -924,6 +917,7 @@ export default function App() {
           </div>
         </div>
       </footer>
+      </div>
     </div>
   )
 }

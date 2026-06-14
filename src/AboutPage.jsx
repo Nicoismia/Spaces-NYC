@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { spacesBtn, typeBtnShadow, typeBtnSize } from './buttons'
 import { COMPANY_EMAIL_DISPLAY, COMPANY_PHONE_DISPLAY, companyMailto, companyTel } from './contact'
+import { FOOTER_COMPANY_LINKS } from './siteMap'
 import SiteHeader from './SiteHeader'
 import { useTallyPopup } from './TallyPopup'
 
@@ -259,12 +260,7 @@ export default function AboutPage() {
             <div>
               <p className={`mb-4 ${typeLabel} text-white/55`}>Company</p>
               <ul className="space-y-2.5">
-                {[
-                  { label: 'About', href: '/about' },
-                  { label: 'Portfolio', href: '/#portfolio' },
-                  { label: 'FAQ', href: '/#faq' },
-                  { label: 'Contact', href: '/#contact' },
-                ].map((item) => (
+                {FOOTER_COMPANY_LINKS.map((item) => (
                   <li key={item.label}>
                     <a href={item.href} className={`text-white/80 transition-colors hover:text-white ${typeBodySm}`}>
                       {item.label}

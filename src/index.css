@@ -11,7 +11,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
@@ -45,6 +45,65 @@ body {
     0 3px 10px rgba(79, 142, 232, 0.22);
 }
 
+/* Site closing — Let's Talk + footer share one continuous dark block */
+.homepage .site-closing {
+  background: #0a0a0a;
+  color: #fff;
+}
+
+.homepage .contact-section {
+  background: transparent;
+}
+
+.homepage .contact-inner {
+  width: 100%;
+}
+
+.homepage .site-footer {
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 2.5rem;
+}
+
+.homepage .contact-section__title {
+  color: #fff;
+  font-weight: 700;
+}
+
+.homepage .contact-section__copy {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.homepage .contact-section__label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #60a5fa;
+}
+
+.homepage .contact-section__value {
+  color: #fff;
+}
+
+.homepage .contact-section__value:hover {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.homepage .contact-section__btn--call {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  box-shadow: none;
+}
+
+.homepage .contact-section__btn--call:hover {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
 .homepage .hero-cta-row .spaces-btn {
   padding: 1rem 2.25rem;
   font-size: 1.0625rem;
@@ -63,6 +122,11 @@ body {
     box-shadow:
       0 14px 36px rgba(79, 142, 232, 0.42),
       0 5px 14px rgba(79, 142, 232, 0.26);
+  }
+
+  .homepage .contact-section__btn--call:hover {
+    transform: translateY(-2px);
+    box-shadow: none;
   }
 
   .spaces-btn:hover {
@@ -90,6 +154,43 @@ body {
 
 .portfolio-scroll::-webkit-scrollbar {
   display: none;
+}
+
+/* Portfolio — featured editorial gallery */
+.homepage .portfolio-section__headline {
+  font-weight: 700;
+}
+
+.homepage .portfolio-gallery .portfolio-scroll {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.homepage .portfolio-gallery [data-portfolio-card] {
+  position: relative;
+  flex: 0 0 58%;
+  width: 58%;
+  height: 380px;
+  min-height: 380px;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.08);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.homepage .portfolio-gallery [data-portfolio-card] img {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 
 /* Package cards — uniform height/width across mobile and desktop */
@@ -148,33 +249,16 @@ body {
   padding: 1.125rem 1.25rem 1rem;
   overflow: hidden;
   border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   background-color: #fff;
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(255, 255, 255, 0.35) 14%,
-    rgba(255, 255, 255, 0) 24%
-  );
   box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.075),
-    0 6px 14px rgba(0, 0, 0, 0.045),
-    0 1px 3px rgba(0, 0, 0, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    0 2px 8px rgba(0, 0, 0, 0.03),
+    0 12px 30px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.25s ease;
 }
 
 .homepage .package-carousel .package-card {
-  overflow: visible;
-}
-
-.homepage .package-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1);
+  overflow: hidden;
 }
 
 .homepage .package-card__bottom {
@@ -361,6 +445,11 @@ body {
     margin-bottom: 16px;
   }
 
+  .homepage .section-headline--mobile {
+    font-size: 1.75rem;
+    line-height: 0.99;
+  }
+
   .homepage .services-header__cta {
     display: none;
   }
@@ -371,6 +460,8 @@ body {
     max-width: none;
     overflow-x: hidden;
     overflow-y: hidden;
+    padding-top: 8px;
+    padding-bottom: 8px;
   }
 
   .homepage .package-carousel {
@@ -383,7 +474,7 @@ body {
     overscroll-behavior: none;
     align-items: stretch;
     gap: 16px;
-    padding: 6px calc((100% - 82vw) / 2) 36px;
+    padding: 14px calc((100% - 82vw) / 2) 44px;
     margin: 0;
     max-width: none;
     -webkit-overflow-scrolling: touch;
@@ -404,7 +495,7 @@ body {
     scroll-snap-stop: always;
     min-height: 422px;
     height: auto;
-    overflow: hidden;
+    overflow: visible;
     transform: none;
     opacity: 1;
     transition: none;
@@ -423,7 +514,7 @@ body {
 
   .homepage .package-carousel .package-card {
     transform: none !important;
-    transition: box-shadow 0.25s ease;
+    transition: none;
   }
 
   .homepage .package-carousel-card {
@@ -465,29 +556,33 @@ body {
     margin-top: 28px;
   }
 
+  .homepage .portfolio-section__headline {
+    font-size: 1.75rem;
+    line-height: 0.99;
+  }
+
   .homepage .portfolio-gallery {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
     overflow-x: hidden;
     overflow-y: hidden;
   }
 
   .homepage .portfolio-gallery .portfolio-scroll {
     gap: 1rem;
-    scroll-padding-inline: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
+    scroll-padding-inline: calc((100% - 88vw) / 2);
+    padding: 8px calc((100% - 88vw) / 2) 20px;
     touch-action: pan-x;
     overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
   }
 
   .homepage .portfolio-gallery [data-portfolio-card] {
-    flex: 0 0 100%;
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
+    flex: 0 0 88vw;
+    width: 88vw;
+    min-width: 88vw;
+    max-width: 88vw;
+    height: 300px;
+    min-height: 300px;
     transform: none;
     transition: none;
     will-change: auto;
@@ -549,7 +644,8 @@ body {
     margin-right: auto;
     align-items: start;
     overflow: visible;
-    padding-bottom: 2rem;
+    padding-top: 12px;
+    padding-bottom: 3rem;
   }
 
   .homepage .package-carousel-slide {
@@ -569,15 +665,26 @@ body {
   }
 
   .homepage .package-card:hover {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
     box-shadow:
-      0 22px 48px rgba(0, 0, 0, 0.095),
-      0 8px 20px rgba(0, 0, 0, 0.055),
-      0 2px 6px rgba(0, 0, 0, 0.035),
-      inset 0 1px 0 rgba(255, 255, 255, 1);
+      0 4px 12px rgba(0, 0, 0, 0.04),
+      0 20px 45px rgba(0, 0, 0, 0.08);
   }
 
-  .homepage .package-card:hover::before {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1);
+  .homepage .portfolio-section__headline {
+    font-size: 2.25rem;
+  }
+
+  .homepage .portfolio-gallery .portfolio-scroll {
+    gap: 1.5rem;
+    scroll-padding-inline: 21%;
+    padding: 16px 0 28px;
+  }
+
+  .homepage .portfolio-gallery [data-portfolio-card] {
+    flex: 0 0 58%;
+    width: 58%;
+    height: 400px;
+    min-height: 400px;
   }
 }
