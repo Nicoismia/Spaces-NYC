@@ -6,9 +6,9 @@ export const COMPANY_EMAIL_DISPLAY = 'Hello@spaces-nyc.com'
 
 export const companyMailto = `mailto:${COMPANY_EMAIL}`
 
-/** Placeholder until the real Spaces NYC number is added. */
-export const COMPANY_PHONE_DISPLAY = '(XXX) XXX-XXXX'
+/** Official Spaces NYC phone — single source of truth for tel/sms links site-wide. */
+export const COMPANY_PHONE_DISPLAY = '(646) 849-6780'
 
-export const companyTel = 'tel:+1XXXXXXXXXX'
+export const companyTel = 'tel:+16468496780'
 
-export const companySms = 'sms:+1XXXXXXXXXX'
+export const companySms = 'sms:+16468496780'

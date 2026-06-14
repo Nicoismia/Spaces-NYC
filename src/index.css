@@ -369,19 +369,19 @@ body {
     margin-left: -1.5rem;
     margin-right: -1.5rem;
     max-width: none;
-    overflow: visible;
+    overflow-x: hidden;
+    overflow-y: hidden;
   }
 
   .homepage .package-carousel {
     display: flex;
     overflow-x: auto;
-    overflow-y: visible;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    touch-action: pan-x pan-y;
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: auto;
-    align-items: flex-start;
+    touch-action: pan-x;
+    overscroll-behavior: none;
+    align-items: stretch;
     gap: 16px;
     padding: 6px calc((100% - 82vw) / 2) 36px;
     margin: 0;
@@ -404,13 +404,26 @@ body {
     scroll-snap-stop: always;
     min-height: 422px;
     height: auto;
-    overflow: visible;
-    opacity: 0.88;
-    transition: opacity 0.28s ease;
+    overflow: hidden;
+    transform: none;
+    opacity: 1;
+    transition: none;
+    will-change: auto;
   }
 
   .homepage .package-carousel-slide.is-active {
+    transform: none;
     opacity: 1;
+  }
+
+  .homepage .package-carousel-slide > * {
+    transform: none;
+    transition: none;
+  }
+
+  .homepage .package-carousel .package-card {
+    transform: none !important;
+    transition: box-shadow 0.25s ease;
   }
 
   .homepage .package-carousel-card {
@@ -452,9 +465,20 @@ body {
     margin-top: 28px;
   }
 
+  .homepage .portfolio-gallery {
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
   .homepage .portfolio-gallery .portfolio-scroll {
     gap: 1rem;
     scroll-padding-inline: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    touch-action: pan-x;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .homepage .portfolio-gallery [data-portfolio-card] {
@@ -462,6 +486,21 @@ body {
     width: 100%;
     min-width: 100%;
     max-width: 100%;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
+  .homepage .portfolio-gallery [data-portfolio-card] img {
+    transform: none !important;
+    transition: none;
+  }
+
+  .homepage .portfolio-gallery [data-portfolio-card] .pointer-events-none {
+    transform: none;
+    transition: background-color 0.5s;
   }
 }
 

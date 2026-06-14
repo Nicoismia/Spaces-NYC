@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { spacesBtn, typeBtnShadow, typeBtnSize } from './buttons'
-import { COMPANY_EMAIL_DISPLAY, companyMailto } from './contact'
+import { COMPANY_EMAIL_DISPLAY, COMPANY_PHONE_DISPLAY, companyMailto, companyTel } from './contact'
 import SiteHeader from './SiteHeader'
 import { useTallyPopup } from './TallyPopup'
 
@@ -278,8 +278,8 @@ export default function AboutPage() {
               <p className={`mb-4 ${typeLabel} text-white/55`}>Contact</p>
               <ul className={`space-y-2.5 text-white/80 ${typeBodySm}`}>
                 <li>
-                  <a href="tel:+12125550100" className="transition-colors hover:text-white">
-                    (212) 555-0100
+                  <a href={companyTel} className="transition-colors hover:text-white">
+                    {COMPANY_PHONE_DISPLAY}
                   </a>
                 </li>
                 <li>

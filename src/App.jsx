@@ -889,8 +889,8 @@ export default function App() {
               </SectionLabel>
               <ul className={`space-y-2.5 text-white/80 ${typeBodySm}`}>
                 <li>
-                  <a href="tel:+12125550100" className="transition-colors hover:text-white">
-                    (212) 555-0100
+                  <a href={companyTel} className="transition-colors hover:text-white">
+                    {COMPANY_PHONE_DISPLAY}
                   </a>
                 </li>
                 <li>
