@@ -11,8 +11,8 @@ import {
   companyTel,
 } from './contact'
 import { useTallyPopup } from './TallyPopup'
-import { CONTACT_HASH, CONTACT_SECTION_ID, FOOTER_COMPANY_LINKS } from './siteMap'
-import { handleHomeSectionNav } from './scrollToSection'
+import { CONTACT_SECTION_ID, FOOTER_COMPANY_LINKS } from './siteMap'
+import { useContactModal } from './ContactModal'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -299,15 +299,17 @@ function HeroTallyButton({ className = '' }) {
 }
 
 function HeroContactButton({ className = '' }) {
+  const { openContactModal } = useContactModal()
+
   return (
-    <a
-      href={CONTACT_HASH}
-      onClick={(event) => handleHomeSectionNav(event, CONTACT_SECTION_ID)}
+    <button
+      type="button"
+      onClick={openContactModal}
       className={`${typeBtn} ${typeBtnSize} spaces-btn inline-flex items-center select-none border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-[transform,box-shadow,background-color,border-color] duration-[250ms] hover:border-white/40 hover:bg-white/15 ${className}`}
     >
       Let&apos;s Talk
       <IconPhone />
-    </a>
+    </button>
   )
 }
 
