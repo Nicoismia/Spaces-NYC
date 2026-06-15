@@ -163,12 +163,22 @@ body {
 
 .homepage .portfolio-gallery .portfolio-scroll {
   display: flex;
+  align-items: stretch;
   gap: 1.25rem;
+  width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+}
+
+.homepage .portfolio-gallery__arrow--prev {
+  left: 0;
+}
+
+.homepage .portfolio-gallery__arrow--next {
+  right: 0;
 }
 
 .homepage .portfolio-gallery [data-portfolio-card] {
@@ -562,25 +572,40 @@ body {
   }
 
   .homepage .portfolio-gallery {
-    margin-left: -1.5rem;
-    margin-right: -1.5rem;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
     overflow-x: hidden;
     overflow-y: hidden;
   }
 
+  .homepage .portfolio-gallery__track {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .homepage .portfolio-gallery__arrow--prev {
+    left: 16px;
+  }
+
+  .homepage .portfolio-gallery__arrow--next {
+    right: 16px;
+  }
+
   .homepage .portfolio-gallery .portfolio-scroll {
     gap: 1rem;
-    scroll-padding-inline: calc((100% - 88vw) / 2);
-    padding: 8px calc((100% - 88vw) / 2) 20px;
+    scroll-padding-inline: calc((100% - 86vw) / 2);
+    padding: 8px calc((100% - 86vw) / 2) 20px;
     touch-action: pan-x;
     overscroll-behavior: none;
   }
 
   .homepage .portfolio-gallery [data-portfolio-card] {
-    flex: 0 0 88vw;
-    width: 88vw;
-    min-width: 88vw;
-    max-width: 88vw;
+    flex: 0 0 86vw;
+    width: 86vw;
+    min-width: 86vw;
+    max-width: 86vw;
     height: 300px;
     min-height: 300px;
     transform: none;
@@ -679,6 +704,14 @@ body {
     gap: 1.5rem;
     scroll-padding-inline: 21%;
     padding: 16px 0 28px;
+  }
+
+  .homepage .portfolio-gallery__arrow--prev {
+    left: 0;
+  }
+
+  .homepage .portfolio-gallery__arrow--next {
+    right: 0;
   }
 
   .homepage .portfolio-gallery [data-portfolio-card] {

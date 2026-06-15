@@ -195,6 +195,7 @@ const PORTFOLIO = [
   '/portfolio/williamsburg-studio.png',
   '/portfolio/west-village-studio.png',
   '/portfolio/hudson-yards-residence.png',
+  '/portfolio/townhouse-hallway.png',
 ]
 
 function Logo({ className = 'h-6', invert = false }) {
@@ -408,15 +409,26 @@ function PortfolioGallery({ items }) {
     const container = scrollRef.current
     if (!container) return
 
-    const card = container.querySelector('[data-portfolio-card]')
-    if (!card) return
+    const cards = [...container.querySelectorAll('[data-portfolio-card]')]
+    if (!cards.length) return
 
-    const gap = Number.parseFloat(getComputedStyle(container).columnGap || getComputedStyle(container).gap) || 20
+    const containerRect = container.getBoundingClientRect()
+    const center = containerRect.left + containerRect.width / 2
 
-    container.scrollBy({
-      left: direction * (card.offsetWidth + gap),
-      behavior: 'smooth',
+    let closestIndex = 0
+    let minDistance = Infinity
+    cards.forEach((card, index) => {
+      const cardRect = card.getBoundingClientRect()
+      const cardCenter = cardRect.left + cardRect.width / 2
+      const distance = Math.abs(center - cardCenter)
+      if (distance < minDistance) {
+        minDistance = distance
+        closestIndex = index
+      }
     })
+
+    const nextIndex = Math.max(0, Math.min(cards.length - 1, closestIndex + direction))
+    cards[nextIndex]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
   }
 
   const closeLightbox = () => setLightboxIndex(null)
@@ -431,12 +443,12 @@ function PortfolioGallery({ items }) {
 
   return (
     <div className="portfolio-gallery relative mx-auto w-full max-w-[1360px]">
-      <div className="portfolio-gallery__track relative">
+      <div className="portfolio-gallery__track relative w-full">
         <button
           type="button"
           onClick={() => scrollByCard(-1)}
           aria-label="Scroll portfolio left"
-          className={`portfolio-gallery__arrow ${spacesBtnIcon} spaces-btn-icon--centered absolute left-2 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 border border-[#e5e5e5] bg-white text-ink shadow-[0_4px_18px_rgba(0,0,0,0.08)] hover:bg-neutral-50 md:flex lg:left-0`}
+          className={`portfolio-gallery__arrow portfolio-gallery__arrow--prev ${spacesBtnIcon} spaces-btn-icon--centered absolute top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 border border-[#e5e5e5] bg-white text-ink shadow-[0_4px_18px_rgba(0,0,0,0.08)] hover:bg-neutral-50`}
         >
           <IconArrowRight className="h-4 w-4 rotate-180" />
         </button>
@@ -445,12 +457,12 @@ function PortfolioGallery({ items }) {
           type="button"
           onClick={() => scrollByCard(1)}
           aria-label="Scroll portfolio right"
-          className={`portfolio-gallery__arrow ${spacesBtnIcon} spaces-btn-icon--centered absolute right-2 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 border border-[#e5e5e5] bg-white text-ink shadow-[0_4px_18px_rgba(0,0,0,0.08)] hover:bg-neutral-50 md:flex lg:right-0`}
+          className={`portfolio-gallery__arrow portfolio-gallery__arrow--next ${spacesBtnIcon} spaces-btn-icon--centered absolute top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 border border-[#e5e5e5] bg-white text-ink shadow-[0_4px_18px_rgba(0,0,0,0.08)] hover:bg-neutral-50`}
         >
           <IconArrowRight className="h-4 w-4" />
         </button>
 
-        <div ref={scrollRef} className="portfolio-scroll flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
+        <div ref={scrollRef} className="portfolio-scroll w-full">
           {items.map((image, index) => (
             <button
               key={image}
@@ -728,7 +740,7 @@ export default function App() {
       {/* ── Hero ── */}
       <section className="relative min-h-screen">
         <img
-          src="/hero-loft.jpg"
+          src="/hero-loft.png"
           alt=""
           fetchPriority="high"
           decoding="async"
