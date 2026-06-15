@@ -13,6 +13,7 @@ import {
 import { useTallyPopup } from './TallyPopup'
 import { CONTACT_SECTION_ID, FOOTER_COMPANY_LINKS } from './siteMap'
 import { useContactModal } from './ContactModal'
+import { useCarouselTouchAxis } from './useCarouselTouchAxis'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -403,6 +404,7 @@ function PortfolioLightbox({ items, activeIndex, onClose, onPrev, onNext }) {
 
 function PortfolioGallery({ items }) {
   const scrollRef = useRef(null)
+  useCarouselTouchAxis(scrollRef)
   const [lightboxIndex, setLightboxIndex] = useState(null)
 
   const scrollByCard = (direction) => {
@@ -496,63 +498,90 @@ function PortfolioGallery({ items }) {
   )
 }
 
-function HeroFeatureBar({ features }) {
-  const scrollRef = useRef(null)
+const HERO_FEATURE_EASE = [0.45, 0, 0.15, 1]
+
+function HeroFeatureRotator({ features }) {
   const [activeIndex, setActiveIndex] = useState(0)
+  const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
-    const container = scrollRef.current
-    if (!container) return
+    const id = window.setInterval(() => {
+      setActiveIndex((index) => (index + 1) % features.length)
+    }, 5000)
 
-    const mobileQuery = window.matchMedia('(max-width: 768px)')
-
-    const updateActiveIndex = () => {
-      const cards = container.querySelectorAll('.hero-info-card')
-      if (!cards.length) return
-
-      const center = container.scrollLeft + container.clientWidth / 2
-      let closest = 0
-      let minDistance = Infinity
-
-      cards.forEach((card, index) => {
-        const cardCenter = card.offsetLeft + card.offsetWidth / 2
-        const distance = Math.abs(center - cardCenter)
-        if (distance < minDistance) {
-          minDistance = distance
-          closest = index
-        }
-      })
-
-      setActiveIndex(closest)
-    }
-
-    const onScroll = () => {
-      if (!mobileQuery.matches) updateActiveIndex()
-    }
-
-    updateActiveIndex()
-    container.addEventListener('scroll', onScroll, { passive: true })
-    container.addEventListener('scrollend', updateActiveIndex, { passive: true })
-    return () => {
-      container.removeEventListener('scroll', onScroll)
-      container.removeEventListener('scrollend', updateActiveIndex)
-    }
+    return () => window.clearInterval(id)
   }, [features.length])
 
   return (
+    <div className="feature-bar feature-bar--mobile absolute bottom-0 left-0 right-0 z-10 bg-black/60 backdrop-blur-sm">
+      <div className="hero-info-rotator mx-auto w-[86vw] max-w-[86vw] pt-5">
+        <div className="hero-info-rotator__viewport">
+          {features.map((feature, index) => {
+            const Icon = feature.icon
+            const isActive = index === activeIndex
+
+            return (
+              <motion.div
+                key={feature.title}
+                className="hero-info-card hero-info-card--rotating flex items-start gap-4"
+                initial={false}
+                animate={{
+                  opacity: isActive ? 1 : 0,
+                  y: 0,
+                }}
+                transition={
+                  shouldReduceMotion
+                    ? { duration: 0 }
+                    : { duration: 0.75, ease: HERO_FEATURE_EASE }
+                }
+                aria-hidden={!isActive}
+                style={{ zIndex: isActive ? 2 : 1 }}
+              >
+                <Icon className="mt-0.5 h-5 w-5 shrink-0 text-white/70" />
+                <div className="min-w-0">
+                  <p className={`${typeLabel} text-white`}>{feature.title}</p>
+                  <p className={`mt-1 text-white/75 ${typeBodySm}`}>{feature.desc}</p>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="hero-info-dots" aria-hidden="true">
+        {features.map((f, i) => (
+          <span key={f.title} className={i === activeIndex ? 'is-active' : undefined} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function HeroFeatureBar({ features }) {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false,
+  )
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia('(max-width: 768px)')
+    const onChange = () => setIsMobile(mobileQuery.matches)
+
+    onChange()
+    mobileQuery.addEventListener('change', onChange)
+    return () => mobileQuery.removeEventListener('change', onChange)
+  }, [])
+
+  if (isMobile) {
+    return <HeroFeatureRotator features={features} />
+  }
+
+  return (
     <div className="feature-bar absolute bottom-0 left-0 right-0 z-10 bg-black/60 backdrop-blur-sm">
-      <div
-        ref={scrollRef}
-        className="feature-bar__grid hero-info-grid mx-auto grid max-w-7xl grid-cols-1 divide-y divide-white/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x"
-      >
+      <div className="feature-bar__grid hero-info-grid mx-auto grid max-w-7xl grid-cols-1 divide-y divide-white/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
         {features.map((f, i) => {
           const Icon = f.icon
           return (
-            <FadeIn
-              key={f.title}
-              delay={i * 0.08}
-              className={`hero-info-card flex items-start gap-4 px-6 py-6 md:px-8${i === activeIndex ? ' is-active' : ''}`}
-            >
+            <FadeIn key={f.title} delay={i * 0.08} className="hero-info-card flex items-start gap-4 px-6 py-6 md:px-8">
               <Icon className="mt-0.5 h-5 w-5 shrink-0 text-white/70" />
               <div>
                 <p className={`${typeLabel} text-white`}>{f.title}</p>
@@ -561,12 +590,6 @@ function HeroFeatureBar({ features }) {
             </FadeIn>
           )
         })}
-      </div>
-
-      <div className="hero-info-dots" aria-hidden="true">
-        {features.map((f, i) => (
-          <span key={f.title} className={i === activeIndex ? 'is-active' : undefined} />
-        ))}
       </div>
     </div>
   )
@@ -628,6 +651,7 @@ const servicesTallyBtnClass = `${typeBtn} ${typeBtnSize} ${typeBtnShadow} bg-ink
 
 function PackagesSection({ packages }) {
   const scrollRef = useRef(null)
+  useCarouselTouchAxis(scrollRef)
   const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {

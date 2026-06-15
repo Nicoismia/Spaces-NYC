@@ -333,11 +333,47 @@ body {
   }
 
   .site-header {
-    padding-top: 2.75rem;
+    padding-top: calc(2.75rem + env(safe-area-inset-top, 0px));
   }
 
   .homepage .site-header--home {
+    --site-header-mobile-height: calc(2.75rem + 4.6rem + 1rem + env(safe-area-inset-top, 0px));
+    isolation: isolate;
     padding-bottom: 1rem;
+  }
+
+  .homepage .site-header--home.site-header--menu-open {
+    z-index: 100;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    pointer-events: none;
+  }
+
+  .homepage .site-header--home.site-header--menu-open .site-header__logo,
+  .homepage .site-header--home.site-header--menu-open .site-header__menu-toggle {
+    pointer-events: auto;
+  }
+
+  .homepage .site-header--home .site-header__logo {
+    position: relative;
+    z-index: 100;
+  }
+
+  .homepage .site-header--home .site-header__menu-toggle {
+    position: relative;
+    z-index: 110;
+    touch-action: manipulation;
+  }
+
+  .site-header__mobile-menu {
+    z-index: 80;
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .site-header__mobile-nav {
+    position: relative;
+    z-index: 105;
+    padding-top: calc(2.75rem + 4.6rem + 1rem + env(safe-area-inset-top, 0px));
   }
 
   .homepage .hero-header-spacer {
@@ -379,57 +415,47 @@ body {
     }
   }
 
-  .homepage .hero-info-grid {
-    display: flex;
-    overflow-x: auto;
-    overflow-y: visible;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    touch-action: pan-x pan-y;
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: auto;
-    gap: 16px;
-    padding: 20px calc((100% - 84vw) / 2) 8px;
-    margin: 0;
-    max-width: none;
-    border-top: none;
-    -webkit-overflow-scrolling: touch;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  .homepage .feature-bar--mobile {
+    touch-action: pan-y;
   }
 
-  .homepage .hero-info-grid::-webkit-scrollbar {
-    display: none;
+  .homepage .hero-info-rotator {
+    width: 86vw;
+    max-width: 86vw;
+    margin-left: auto;
+    margin-right: auto;
+    touch-action: pan-y;
   }
 
-  .homepage .hero-info-grid > * {
-    border-top-width: 0;
+  .homepage .hero-info-rotator__viewport {
+    position: relative;
+    min-height: 5.75rem;
+    overflow: hidden;
+    isolation: isolate;
   }
 
-  .homepage .hero-info-card {
-    flex: 0 0 84vw;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
+  .homepage .hero-info-card--rotating {
+    position: absolute;
+    inset: 0;
+    width: 100%;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 0.75rem;
     background: rgba(0, 0, 0, 0.28);
     padding: 1rem 1.25rem;
-    transform: scale(0.98);
-    opacity: 0.88;
-    transition:
-      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 0.28s ease;
+    transform: none !important;
+    will-change: opacity;
+    pointer-events: none;
   }
 
-  .homepage .hero-info-card.is-active {
-    transform: scale(1);
-    opacity: 1;
+  .homepage .hero-info-card--rotating[aria-hidden='false'] {
+    pointer-events: auto;
   }
 
   .homepage .hero-info-dots {
     display: flex;
     justify-content: center;
     gap: 0.5rem;
+    padding-top: 0.75rem;
     padding-bottom: 0.75rem;
   }
 
@@ -438,7 +464,11 @@ body {
     height: 0.375rem;
     border-radius: 9999px;
     background: rgba(255, 255, 255, 0.28);
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    transition:
+      background-color 0.45s ease,
+      transform 0.45s cubic-bezier(0.45, 0, 0.15, 1),
+      opacity 0.45s ease;
+    pointer-events: none;
   }
 
   .homepage .hero-info-dots span.is-active {
@@ -469,7 +499,8 @@ body {
     margin-right: -1.5rem;
     max-width: none;
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: visible;
+    touch-action: pan-y;
     padding-top: 8px;
     padding-bottom: 8px;
   }
@@ -480,8 +511,9 @@ body {
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    touch-action: pan-x;
-    overscroll-behavior: none;
+    touch-action: pan-x pan-y;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
     align-items: stretch;
     gap: 16px;
     padding: 14px calc((100% - 82vw) / 2) 44px;
@@ -577,12 +609,14 @@ body {
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: visible;
+    touch-action: pan-y;
   }
 
   .homepage .portfolio-gallery__track {
     width: 100%;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: visible;
   }
 
   .homepage .portfolio-gallery__arrow--prev {
@@ -597,8 +631,9 @@ body {
     gap: 1rem;
     scroll-padding-inline: calc((100% - 86vw) / 2);
     padding: 8px calc((100% - 86vw) / 2) 20px;
-    touch-action: pan-x;
-    overscroll-behavior: none;
+    touch-action: pan-x pan-y;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
   }
 
   .homepage .portfolio-gallery [data-portfolio-card] {
@@ -625,7 +660,6 @@ body {
 }
 
 @media (min-width: 769px) {
-  .homepage .hero-info-card,
   .homepage .package-carousel-slide {
     transform: none;
     opacity: 1;
