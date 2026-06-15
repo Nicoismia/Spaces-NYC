@@ -427,16 +427,22 @@ body {
     touch-action: pan-y;
   }
 
+  .homepage .hero-feature-track {
+    display: flex;
+    align-items: stretch;
+    touch-action: pan-y;
+  }
+
   .homepage .hero-info-card--rotating {
-    position: absolute;
-    inset: 0;
+    position: relative;
+    flex: 0 0 100%;
     width: 100%;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 0.75rem;
     background: rgba(0, 0, 0, 0.28);
     padding: 1rem 1.25rem;
     transform: none !important;
-    will-change: opacity;
+    will-change: auto;
     pointer-events: none;
   }
 
@@ -498,27 +504,33 @@ body {
     padding-bottom: 8px;
   }
 
+  .homepage .carousel-viewport {
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  .homepage .carousel-track {
+    transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .homepage .carousel-track.is-dragging {
+    transition: none;
+  }
+
+  .homepage .package-carousel-viewport {
+    width: 100%;
+  }
+
   .homepage .package-carousel {
     display: flex;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: auto;
+    overflow: visible;
     touch-action: pan-y;
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: auto;
     align-items: stretch;
     gap: 16px;
     padding: 14px calc((100% - 82vw) / 2) 44px;
     margin: 0;
     max-width: none;
-    -webkit-overflow-scrolling: touch;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .homepage .package-carousel::-webkit-scrollbar {
-    display: none;
   }
 
   .homepage .package-carousel-slide {
@@ -526,8 +538,6 @@ body {
     flex: 0 0 82vw;
     flex-direction: column;
     align-items: stretch;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
     min-height: 422px;
     height: auto;
     overflow: visible;
@@ -614,12 +624,9 @@ body {
 
   .homepage .portfolio-gallery .portfolio-scroll {
     gap: 1rem;
-    scroll-padding-inline: calc((100% - 86vw) / 2);
     padding: 8px calc((100% - 86vw) / 2) 20px;
-    scroll-behavior: auto;
+    overflow: visible;
     touch-action: pan-y;
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: auto;
   }
 
   .homepage .portfolio-gallery [data-portfolio-card] {
@@ -685,12 +692,28 @@ body {
 
   .homepage .package-carousel.package-grid {
     width: 100%;
+    transform: none !important;
+    transition: none !important;
     margin-left: auto;
     margin-right: auto;
     align-items: start;
     overflow: visible;
     padding-top: 12px;
     padding-bottom: 3rem;
+  }
+
+  .homepage .package-carousel-viewport {
+    overflow: visible;
+  }
+
+  .homepage .carousel-viewport {
+    overflow: visible;
+  }
+
+  .homepage .carousel-track {
+    transform: none !important;
+    transition: none !important;
+    will-change: auto;
   }
 
   .homepage .package-carousel-slide {
@@ -731,5 +754,11 @@ body {
     width: 58%;
     height: 400px;
     min-height: 400px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage .carousel-track {
+    transition: none !important;
   }
 }

@@ -4,17 +4,38 @@ const MOBILE_QUERY = '(max-width: 768px)'
 const AXIS_LOCK_THRESHOLD = 8
 const SWIPE_DISTANCE_THRESHOLD = 25
 const SWIPE_VELOCITY_THRESHOLD = 0.2
+const CAROUSEL_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
+const CAROUSEL_DURATION_MS = 380
 
-function getClosestSlideIndex(container, slides) {
-  if (!slides.length) return 0
+function getSlides(track, slideSelector) {
+  return [...track.querySelectorAll(slideSelector)]
+}
 
-  const center = container.scrollLeft + container.clientWidth / 2
+function getOffsetForIndex(track, viewport, slides, index) {
+  const slide = slides[index]
+  if (!slide || !viewport) return 0
+
+  const slideCenter = slide.offsetLeft + slide.offsetWidth / 2
+  return viewport.clientWidth / 2 - slideCenter
+}
+
+function getBounds(track, viewport, slides) {
+  if (!slides.length) return { min: 0, max: 0 }
+
+  const offsets = slides.map((_, index) => getOffsetForIndex(track, viewport, slides, index))
+  return {
+    min: Math.min(...offsets),
+    max: Math.max(...offsets),
+  }
+}
+
+function getClosestIndex(track, viewport, slides, translateX) {
   let closest = 0
   let minDistance = Infinity
 
-  slides.forEach((slide, index) => {
-    const slideCenter = slide.offsetLeft + slide.offsetWidth / 2
-    const distance = Math.abs(center - slideCenter)
+  slides.forEach((_, index) => {
+    const offset = getOffsetForIndex(track, viewport, slides, index)
+    const distance = Math.abs(offset - translateX)
     if (distance < minDistance) {
       minDistance = distance
       closest = index
@@ -24,22 +45,79 @@ function getClosestSlideIndex(container, slides) {
   return closest
 }
 
-function scrollToSlide(slide, behavior = 'auto') {
-  slide?.scrollIntoView({ behavior, inline: 'center', block: 'nearest' })
+function readTranslateX(track) {
+  const transform = window.getComputedStyle(track).transform
+  if (!transform || transform === 'none') return 0
+
+  const matrix = transform.match(/matrix\(([^)]+)\)/)
+  if (!matrix) return 0
+
+  const values = matrix[1].split(',').map((value) => Number.parseFloat(value.trim()))
+  return values.length === 6 ? values[4] : 0
 }
 
 /**
- * Responsive horizontal swipe for native scroll carousels.
- * Manual drag on touchmove + snap on touchend; vertical swipes pass through.
+ * Transform-based mobile carousel: finger-follow drag + smooth glide on release.
  */
-export function useScrollCarouselSwipe(scrollRef, slideSelector) {
+export function useTransformCarousel(trackRef, { slideSelector, index, onIndexChange } = {}) {
+  const stateRef = useRef({
+    translateX: 0,
+    index: 0,
+    dragging: false,
+  })
   const gestureRef = useRef(null)
+  const onIndexChangeRef = useRef(onIndexChange)
+
+  onIndexChangeRef.current = onIndexChange
 
   useEffect(() => {
-    const container = scrollRef.current
-    if (!container) return undefined
+    const track = trackRef.current
+    if (!track) return undefined
 
     const mobileQuery = window.matchMedia(MOBILE_QUERY)
+    const viewport = track.parentElement
+
+    const applyTransform = (translateX, dragging) => {
+      stateRef.current.translateX = translateX
+      stateRef.current.dragging = dragging
+      track.style.transform = `translate3d(${translateX}px, 0, 0)`
+      track.classList.toggle('is-dragging', dragging)
+    }
+
+    const goToIndex = (targetIndex, { animate = true, notify = true } = {}) => {
+      const slides = getSlides(track, slideSelector)
+      if (!slides.length || !viewport) return
+
+      const clampedIndex = Math.max(0, Math.min(slides.length - 1, targetIndex))
+      const bounds = getBounds(track, viewport, slides)
+      const nextX = clamp(
+        getOffsetForIndex(track, viewport, slides, clampedIndex),
+        bounds.min,
+        bounds.max,
+      )
+
+      track.style.transition = animate
+        ? `transform ${CAROUSEL_DURATION_MS}ms ${CAROUSEL_EASE}`
+        : 'none'
+
+      applyTransform(nextX, false)
+      stateRef.current.index = clampedIndex
+
+      if (notify && onIndexChangeRef.current) {
+        onIndexChangeRef.current(clampedIndex)
+      }
+    }
+
+    const syncLayout = ({ animate = false } = {}) => {
+      if (!mobileQuery.matches) {
+        track.style.transition = ''
+        track.style.transform = ''
+        track.classList.remove('is-dragging')
+        return
+      }
+
+      goToIndex(stateRef.current.index, { animate, notify: false })
+    }
 
     const resetGesture = () => {
       gestureRef.current = null
@@ -55,9 +133,12 @@ export function useScrollCarouselSwipe(scrollRef, slideSelector) {
         startX: touch.clientX,
         startY: touch.clientY,
         startTime: performance.now(),
-        startScrollLeft: container.scrollLeft,
+        startTranslate: readTranslateX(track),
         axis: null,
       }
+
+      track.style.transition = 'none'
+      applyTransform(gestureRef.current.startTranslate, true)
     }
 
     const onTouchMove = (event) => {
@@ -83,7 +164,12 @@ export function useScrollCarouselSwipe(scrollRef, slideSelector) {
       }
 
       event.preventDefault()
-      container.scrollLeft = gesture.startScrollLeft - deltaX
+
+      const slides = getSlides(track, slideSelector)
+      const bounds = getBounds(track, viewport, slides)
+      const nextX = clamp(gesture.startTranslate + deltaX, bounds.min, bounds.max)
+
+      applyTransform(nextX, true)
     }
 
     const onTouchEnd = (event) => {
@@ -101,19 +187,19 @@ export function useScrollCarouselSwipe(scrollRef, slideSelector) {
         return
       }
 
-      const deltaX = touch.clientX - gesture.startX
-      const elapsed = Math.max(performance.now() - gesture.startTime, 1)
-      const velocity = deltaX / elapsed
-      const slides = [...container.querySelectorAll(slideSelector)]
-
+      const slides = getSlides(track, slideSelector)
       if (!slides.length) {
         resetGesture()
         return
       }
 
-      const closest = getClosestSlideIndex(container, slides)
-      let target = closest
+      const deltaX = touch.clientX - gesture.startX
+      const elapsed = Math.max(performance.now() - gesture.startTime, 1)
+      const velocity = deltaX / elapsed
+      const currentX = readTranslateX(track)
+      const closest = getClosestIndex(track, viewport, slides, currentX)
 
+      let target = closest
       const distanceTrigger = Math.abs(deltaX) > SWIPE_DISTANCE_THRESHOLD
       const velocityTrigger = Math.abs(velocity) > SWIPE_VELOCITY_THRESHOLD
 
@@ -123,35 +209,83 @@ export function useScrollCarouselSwipe(scrollRef, slideSelector) {
         target = Math.max(0, Math.min(slides.length - 1, closest + direction))
       }
 
-      scrollToSlide(slides[target])
+      goToIndex(target, { animate: true, notify: true })
       resetGesture()
     }
 
-    container.addEventListener('touchstart', onTouchStart, { passive: true })
-    container.addEventListener('touchmove', onTouchMove, { passive: false })
-    container.addEventListener('touchend', onTouchEnd, { passive: true })
-    container.addEventListener('touchcancel', resetGesture, { passive: true })
+    const onMediaChange = () => syncLayout({ animate: false })
+
+    syncLayout({ animate: false })
+
+    const resizeObserver = new ResizeObserver(() => syncLayout({ animate: false }))
+    if (viewport) resizeObserver.observe(viewport)
+    resizeObserver.observe(track)
+
+    track.addEventListener('touchstart', onTouchStart, { passive: true })
+    track.addEventListener('touchmove', onTouchMove, { passive: false })
+    track.addEventListener('touchend', onTouchEnd, { passive: true })
+    track.addEventListener('touchcancel', onTouchEnd, { passive: true })
+    mobileQuery.addEventListener('change', onMediaChange)
 
     return () => {
-      container.removeEventListener('touchstart', onTouchStart)
-      container.removeEventListener('touchmove', onTouchMove)
-      container.removeEventListener('touchend', onTouchEnd)
-      container.removeEventListener('touchcancel', resetGesture)
+      resizeObserver.disconnect()
+      track.removeEventListener('touchstart', onTouchStart)
+      track.removeEventListener('touchmove', onTouchMove)
+      track.removeEventListener('touchend', onTouchEnd)
+      track.removeEventListener('touchcancel', onTouchEnd)
+      mobileQuery.removeEventListener('change', onMediaChange)
+      track.style.transition = ''
+      track.style.transform = ''
+      track.classList.remove('is-dragging')
     }
-  }, [scrollRef, slideSelector])
+  }, [trackRef, slideSelector])
+
+  useEffect(() => {
+    if (typeof index !== 'number') return undefined
+
+    const track = trackRef.current
+    if (!track || !window.matchMedia(MOBILE_QUERY).matches) return undefined
+
+    if (stateRef.current.dragging || index === stateRef.current.index) return undefined
+
+    const viewport = track.parentElement
+    const slides = getSlides(track, slideSelector)
+    if (!slides.length || !viewport) return undefined
+
+    const bounds = getBounds(track, viewport, slides)
+    const nextX = clamp(
+      getOffsetForIndex(track, viewport, slides, index),
+      bounds.min,
+      bounds.max,
+    )
+
+    track.style.transition = `transform ${CAROUSEL_DURATION_MS}ms ${CAROUSEL_EASE}`
+    track.style.transform = `translate3d(${nextX}px, 0, 0)`
+    track.classList.remove('is-dragging')
+    stateRef.current.index = index
+    stateRef.current.translateX = nextX
+
+    return undefined
+  }, [index, trackRef, slideSelector])
 }
 
-/**
- * Horizontal swipe for index-based carousels (e.g. hero feature rotator).
- */
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value))
+}
+
+// Backward-compatible export name used by carousels.
+export const useScrollCarouselSwipe = useTransformCarousel
+
 export function useIndexCarouselSwipe(elementRef, { onStep }) {
-  const gestureRef = useRef(null)
+  const onStepRef = useRef(onStep)
+  onStepRef.current = onStep
 
   useEffect(() => {
     const element = elementRef.current
     if (!element) return undefined
 
     const mobileQuery = window.matchMedia(MOBILE_QUERY)
+    const gestureRef = { current: null }
 
     const resetGesture = () => {
       gestureRef.current = null
@@ -189,9 +323,7 @@ export function useIndexCarouselSwipe(elementRef, { onStep }) {
         gesture.axis = Math.abs(deltaX) > Math.abs(deltaY) ? 'x' : 'y'
       }
 
-      if (gesture.axis === 'y') {
-        return
-      }
+      if (gesture.axis === 'y') return
 
       event.preventDefault()
     }
@@ -220,7 +352,7 @@ export function useIndexCarouselSwipe(elementRef, { onStep }) {
 
       if (distanceTrigger || velocityTrigger) {
         const intent = velocityTrigger ? velocity : deltaX
-        onStep(intent < 0 ? 1 : -1)
+        onStepRef.current(intent < 0 ? 1 : -1)
       }
 
       resetGesture()
@@ -237,5 +369,5 @@ export function useIndexCarouselSwipe(elementRef, { onStep }) {
       element.removeEventListener('touchend', onTouchEnd)
       element.removeEventListener('touchcancel', resetGesture)
     }
-  }, [elementRef, onStep])
+  }, [elementRef])
 }

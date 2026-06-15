@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import SiteHeader from './SiteHeader'
@@ -13,7 +13,7 @@ import {
 import { useTallyPopup } from './TallyPopup'
 import { CONTACT_SECTION_ID, FOOTER_COMPANY_LINKS } from './siteMap'
 import { useContactModal } from './ContactModal'
-import { useIndexCarouselSwipe, useScrollCarouselSwipe } from './useCarouselSwipe'
+import { useTransformCarousel } from './useCarouselSwipe'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -403,8 +403,8 @@ function PortfolioLightbox({ items, activeIndex, onClose, onPrev, onNext }) {
 }
 
 function PortfolioGallery({ items }) {
-  const scrollRef = useRef(null)
-  useScrollCarouselSwipe(scrollRef, '[data-portfolio-card]')
+  const trackRef = useRef(null)
+  useTransformCarousel(trackRef, { slideSelector: '[data-portfolio-card]' })
   const [lightboxIndex, setLightboxIndex] = useState(null)
 
   const closeLightbox = () => setLightboxIndex(null)
@@ -419,8 +419,8 @@ function PortfolioGallery({ items }) {
 
   return (
     <div className="portfolio-gallery relative mx-auto w-full max-w-[1360px]">
-      <div className="portfolio-gallery__track relative w-full">
-        <div ref={scrollRef} className="portfolio-scroll w-full">
+      <div className="portfolio-gallery__track carousel-viewport relative w-full">
+        <div ref={trackRef} className="carousel-track portfolio-scroll w-full">
           {items.map((image, index) => (
             <button
               key={image}
@@ -454,21 +454,15 @@ function PortfolioGallery({ items }) {
   )
 }
 
-const HERO_FEATURE_EASE = [0.45, 0, 0.15, 1]
-
 function HeroFeatureRotator({ features }) {
   const [activeIndex, setActiveIndex] = useState(0)
-  const viewportRef = useRef(null)
-  const shouldReduceMotion = useReducedMotion()
+  const trackRef = useRef(null)
 
-  const onSwipeStep = useCallback(
-    (direction) => {
-      setActiveIndex((index) => (index + direction + features.length) % features.length)
-    },
-    [features.length],
-  )
-
-  useIndexCarouselSwipe(viewportRef, { onStep: onSwipeStep })
+  useTransformCarousel(trackRef, {
+    slideSelector: '.hero-info-card',
+    index: activeIndex,
+    onIndexChange: setActiveIndex,
+  })
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -481,36 +475,27 @@ function HeroFeatureRotator({ features }) {
   return (
     <div className="feature-bar feature-bar--mobile absolute bottom-0 left-0 right-0 z-10 bg-black/60 backdrop-blur-sm">
       <div className="hero-info-rotator mx-auto w-[86vw] max-w-[86vw] pt-5">
-        <div ref={viewportRef} className="hero-info-rotator__viewport">
-          {features.map((feature, index) => {
-            const Icon = feature.icon
-            const isActive = index === activeIndex
+        <div className="hero-info-rotator__viewport carousel-viewport">
+          <div ref={trackRef} className="carousel-track hero-feature-track">
+            {features.map((feature, index) => {
+              const Icon = feature.icon
+              const isActive = index === activeIndex
 
-            return (
-              <motion.div
-                key={feature.title}
-                className="hero-info-card hero-info-card--rotating flex items-start gap-4"
-                initial={false}
-                animate={{
-                  opacity: isActive ? 1 : 0,
-                  y: 0,
-                }}
-                transition={
-                  shouldReduceMotion
-                    ? { duration: 0 }
-                    : { duration: 0.75, ease: HERO_FEATURE_EASE }
-                }
-                aria-hidden={!isActive}
-                style={{ zIndex: isActive ? 2 : 1 }}
-              >
-                <Icon className="mt-0.5 h-5 w-5 shrink-0 text-white/70" />
-                <div className="min-w-0">
-                  <p className={`${typeLabel} text-white`}>{feature.title}</p>
-                  <p className={`mt-1 text-white/75 ${typeBodySm}`}>{feature.desc}</p>
+              return (
+                <div
+                  key={feature.title}
+                  className="hero-info-card hero-info-card--rotating flex items-start gap-4"
+                  aria-hidden={!isActive}
+                >
+                  <Icon className="mt-0.5 h-5 w-5 shrink-0 text-white/70" />
+                  <div className="min-w-0">
+                    <p className={`${typeLabel} text-white`}>{feature.title}</p>
+                    <p className={`mt-1 text-white/75 ${typeBodySm}`}>{feature.desc}</p>
+                  </div>
                 </div>
-              </motion.div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       </div>
 
@@ -616,46 +601,13 @@ function ServicesTallyButton({ className, children }) {
 const servicesTallyBtnClass = `${typeBtn} ${typeBtnSize} ${typeBtnShadow} bg-ink text-white tracking-[0.06em] hover:bg-neutral-800`
 
 function PackagesSection({ packages }) {
-  const scrollRef = useRef(null)
-  useScrollCarouselSwipe(scrollRef, '.package-carousel-slide')
+  const trackRef = useRef(null)
   const [activeIndex, setActiveIndex] = useState(0)
 
-  useEffect(() => {
-    const container = scrollRef.current
-    if (!container) return
-
-    const updateActiveIndex = () => {
-      const slides = container.querySelectorAll('.package-carousel-slide')
-      if (!slides.length) return
-
-      const center = container.scrollLeft + container.clientWidth / 2
-      let closest = 0
-      let minDistance = Infinity
-
-      slides.forEach((card, index) => {
-        const cardCenter = card.offsetLeft + card.offsetWidth / 2
-        const distance = Math.abs(center - cardCenter)
-        if (distance < minDistance) {
-          minDistance = distance
-          closest = index
-        }
-      })
-
-      setActiveIndex(closest)
-    }
-
-    const onScroll = () => {
-      updateActiveIndex()
-    }
-
-    updateActiveIndex()
-    container.addEventListener('scroll', onScroll, { passive: true })
-    container.addEventListener('scrollend', updateActiveIndex, { passive: true })
-    return () => {
-      container.removeEventListener('scroll', onScroll)
-      container.removeEventListener('scrollend', updateActiveIndex)
-    }
-  }, [packages.length])
+  useTransformCarousel(trackRef, {
+    slideSelector: '.package-carousel-slide',
+    onIndexChange: setActiveIndex,
+  })
 
   return (
     <section id="services" className="services-section bg-cream px-6 pt-20 pb-10 md:px-10 md:pb-12 lg:pt-24 lg:pb-14">
@@ -681,10 +633,11 @@ function PackagesSection({ packages }) {
         </FadeIn>
 
         <div className="services-packages">
-          <div
-            ref={scrollRef}
-            className="package-carousel package-grid grid grid-cols-1 gap-8 md:grid-cols-3"
-          >
+          <div className="package-carousel-viewport carousel-viewport">
+            <div
+              ref={trackRef}
+              className="carousel-track package-carousel package-grid grid grid-cols-1 gap-8 md:grid-cols-3"
+            >
           {packages.map((pkg, i) => (
             <div key={pkg.title} className={`package-carousel-slide${i === activeIndex ? ' is-active' : ''}`}>
               <div className="package-badge-slot">
@@ -700,7 +653,8 @@ function PackagesSection({ packages }) {
               <PackageCard pkg={pkg} index={i} className="package-carousel-card" />
             </div>
           ))}
-        </div>
+            </div>
+          </div>
 
           <div className="package-carousel-dots" aria-hidden="true">
             {packages.map((pkg, i) => (
