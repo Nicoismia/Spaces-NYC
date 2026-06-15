@@ -188,12 +188,13 @@ const PACKAGES = [
 ]
 
 const PORTFOLIO = [
-  { title: 'Tribeca Penthouse', image: '/portfolio/tribeca.jpg' },
-  { title: 'Chelsea Loft', image: '/portfolio/chelsea.jpg' },
-  { title: 'Upper East Side Residence', image: '/portfolio/ues.jpg' },
-  { title: 'Williamsburg Condo', image: '/portfolio/williamsburg.jpg' },
-  { title: 'West Village Apartment', image: '/portfolio/west-village.jpg' },
-  { title: 'DUMBO Penthouse', image: '/portfolio/dumbo-alt.jpg' },
+  '/portfolio/tribeca-penthouse.png',
+  '/portfolio/chelsea-loft.png',
+  '/portfolio/dumbo-loft.png',
+  '/portfolio/ues-residence.png',
+  '/portfolio/williamsburg-studio.png',
+  '/portfolio/west-village-studio.png',
+  '/portfolio/hudson-yards-residence.png',
 ]
 
 function Logo({ className = 'h-6', invert = false }) {
@@ -378,7 +379,7 @@ function PortfolioLightbox({ items, activeIndex, onClose, onPrev, onNext }) {
           </button>
 
           <motion.figure
-            key={item.image}
+            key={item}
             className="relative z-10 w-full max-w-6xl"
             initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -387,13 +388,10 @@ function PortfolioLightbox({ items, activeIndex, onClose, onPrev, onNext }) {
             onClick={(event) => event.stopPropagation()}
           >
             <img
-              src={item.image}
-              alt={item.title}
+              src={item}
+              alt="Portfolio photograph"
               className="max-h-[82vh] w-full rounded-xl object-contain"
             />
-            <figcaption className={`mt-4 text-center text-white/90 ${typeCardTitle}`}>
-              {item.title}
-            </figcaption>
           </motion.figure>
         </motion.div>
       )}
@@ -453,24 +451,21 @@ function PortfolioGallery({ items }) {
         </button>
 
         <div ref={scrollRef} className="portfolio-scroll flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
-          {items.map((item, index) => (
+          {items.map((image, index) => (
             <button
-              key={item.title}
+              key={image}
               type="button"
               data-portfolio-card
               onClick={() => setLightboxIndex(index)}
               className="group relative shrink-0 snap-center overflow-hidden rounded-[14px] bg-neutral-100"
             >
               <img
-                src={item.image}
-                alt={item.title}
+                src={image}
+                alt="Portfolio photograph"
                 className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] md:group-hover:scale-[1.04]"
                 loading="lazy"
               />
               <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/25" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/75 to-transparent p-5 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                <p className={`${typeCardTitle} text-white`}>{item.title}</p>
-              </div>
             </button>
           ))}
         </div>
