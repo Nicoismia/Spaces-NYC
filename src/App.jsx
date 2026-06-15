@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import SiteHeader from './SiteHeader'
@@ -13,7 +13,7 @@ import {
 import { useTallyPopup } from './TallyPopup'
 import { CONTACT_SECTION_ID, FOOTER_COMPANY_LINKS } from './siteMap'
 import { useContactModal } from './ContactModal'
-import { useCarouselTouchAxis } from './useCarouselTouchAxis'
+import { useIndexCarouselSwipe, useScrollCarouselSwipe } from './useCarouselSwipe'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -404,34 +404,8 @@ function PortfolioLightbox({ items, activeIndex, onClose, onPrev, onNext }) {
 
 function PortfolioGallery({ items }) {
   const scrollRef = useRef(null)
-  useCarouselTouchAxis(scrollRef)
+  useScrollCarouselSwipe(scrollRef, '[data-portfolio-card]')
   const [lightboxIndex, setLightboxIndex] = useState(null)
-
-  const scrollByCard = (direction) => {
-    const container = scrollRef.current
-    if (!container) return
-
-    const cards = [...container.querySelectorAll('[data-portfolio-card]')]
-    if (!cards.length) return
-
-    const containerRect = container.getBoundingClientRect()
-    const center = containerRect.left + containerRect.width / 2
-
-    let closestIndex = 0
-    let minDistance = Infinity
-    cards.forEach((card, index) => {
-      const cardRect = card.getBoundingClientRect()
-      const cardCenter = cardRect.left + cardRect.width / 2
-      const distance = Math.abs(center - cardCenter)
-      if (distance < minDistance) {
-        minDistance = distance
-        closestIndex = index
-      }
-    })
-
-    const nextIndex = Math.max(0, Math.min(cards.length - 1, closestIndex + direction))
-    cards[nextIndex]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-  }
 
   const closeLightbox = () => setLightboxIndex(null)
 
@@ -446,24 +420,6 @@ function PortfolioGallery({ items }) {
   return (
     <div className="portfolio-gallery relative mx-auto w-full max-w-[1360px]">
       <div className="portfolio-gallery__track relative w-full">
-        <button
-          type="button"
-          onClick={() => scrollByCard(-1)}
-          aria-label="Scroll portfolio left"
-          className={`portfolio-gallery__arrow portfolio-gallery__arrow--prev ${spacesBtnIcon} spaces-btn-icon--centered absolute top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 border border-[#e5e5e5] bg-white text-ink shadow-[0_4px_18px_rgba(0,0,0,0.08)] hover:bg-neutral-50`}
-        >
-          <IconArrowRight className="h-4 w-4 rotate-180" />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => scrollByCard(1)}
-          aria-label="Scroll portfolio right"
-          className={`portfolio-gallery__arrow portfolio-gallery__arrow--next ${spacesBtnIcon} spaces-btn-icon--centered absolute top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 border border-[#e5e5e5] bg-white text-ink shadow-[0_4px_18px_rgba(0,0,0,0.08)] hover:bg-neutral-50`}
-        >
-          <IconArrowRight className="h-4 w-4" />
-        </button>
-
         <div ref={scrollRef} className="portfolio-scroll w-full">
           {items.map((image, index) => (
             <button
@@ -502,7 +458,17 @@ const HERO_FEATURE_EASE = [0.45, 0, 0.15, 1]
 
 function HeroFeatureRotator({ features }) {
   const [activeIndex, setActiveIndex] = useState(0)
+  const viewportRef = useRef(null)
   const shouldReduceMotion = useReducedMotion()
+
+  const onSwipeStep = useCallback(
+    (direction) => {
+      setActiveIndex((index) => (index + direction + features.length) % features.length)
+    },
+    [features.length],
+  )
+
+  useIndexCarouselSwipe(viewportRef, { onStep: onSwipeStep })
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -515,7 +481,7 @@ function HeroFeatureRotator({ features }) {
   return (
     <div className="feature-bar feature-bar--mobile absolute bottom-0 left-0 right-0 z-10 bg-black/60 backdrop-blur-sm">
       <div className="hero-info-rotator mx-auto w-[86vw] max-w-[86vw] pt-5">
-        <div className="hero-info-rotator__viewport">
+        <div ref={viewportRef} className="hero-info-rotator__viewport">
           {features.map((feature, index) => {
             const Icon = feature.icon
             const isActive = index === activeIndex
@@ -651,14 +617,12 @@ const servicesTallyBtnClass = `${typeBtn} ${typeBtnSize} ${typeBtnShadow} bg-ink
 
 function PackagesSection({ packages }) {
   const scrollRef = useRef(null)
-  useCarouselTouchAxis(scrollRef)
+  useScrollCarouselSwipe(scrollRef, '.package-carousel-slide')
   const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
     const container = scrollRef.current
     if (!container) return
-
-    const mobileQuery = window.matchMedia('(max-width: 768px)')
 
     const updateActiveIndex = () => {
       const slides = container.querySelectorAll('.package-carousel-slide')
@@ -681,7 +645,7 @@ function PackagesSection({ packages }) {
     }
 
     const onScroll = () => {
-      if (!mobileQuery.matches) updateActiveIndex()
+      updateActiveIndex()
     }
 
     updateActiveIndex()
