@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { spacesBtn, typeBtnShadow, typeBtnSize } from './buttons'
 import { COMPANY_EMAIL_DISPLAY, COMPANY_PHONE_DISPLAY, companyMailto, companyTel } from './contact'
 import { FOOTER_COMPANY_LINKS } from './siteMap'
+import { navigate } from './navigate'
 import SiteHeader from './SiteHeader'
 import { useTallyPopup } from './TallyPopup'
 
@@ -262,7 +263,15 @@ export default function AboutPage() {
               <ul className="space-y-2.5">
                 {FOOTER_COMPANY_LINKS.map((item) => (
                   <li key={item.label}>
-                    <a href={item.href} className={`text-white/80 transition-colors hover:text-white ${typeBodySm}`}>
+                    <a
+                      href={item.href}
+                      className={`text-white/80 transition-colors hover:text-white ${typeBodySm}`}
+                      onClick={(event) => {
+                        if (!item.href.startsWith('/')) return
+                        event.preventDefault()
+                        navigate(item.href)
+                      }}
+                    >
                       {item.label}
                     </a>
                   </li>

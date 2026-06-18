@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { spacesBtnIcon } from './buttons'
 import { NAV_LINKS, navHref } from './nav'
+import { navigate } from './navigate'
 import { isHomepageSectionHref, scrollToSection, sectionIdFromHref } from './scrollToSection'
 import { useHideOnScroll } from './useHideOnScroll'
 
@@ -163,12 +164,17 @@ export default function SiteHeader({ variant = 'about' }) {
     const href = navHref(link)
 
     runAfterClose(() => {
-      if (isHome && isHomepageSectionHref(href)) {
-        scrollToSection(sectionIdFromHref(href))
+      if (isHomepageSectionHref(href)) {
+        if (isHome) {
+          scrollToSection(sectionIdFromHref(href))
+          return
+        }
+
+        navigate(href)
         return
       }
 
-      window.location.href = href
+      navigate(href)
     })
   }
 

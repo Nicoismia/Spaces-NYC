@@ -12,6 +12,7 @@ import {
 } from './contact'
 import { useTallyPopup } from './TallyPopup'
 import { CONTACT_SECTION_ID, FOOTER_COMPANY_LINKS } from './siteMap'
+import { navigate } from './navigate'
 import { useContactModal } from './ContactModal'
 import { useTransformCarousel } from './useCarouselSwipe'
 
@@ -169,21 +170,21 @@ const PACKAGES = [
     title: 'PHOTO ONLY',
     price: '$199',
     features: ['10–15 HDR Photos', 'Professional Editing', '24 Hour Delivery'],
-    useCase: 'Best for quick rental listings',
+    useCase: 'Everything you need to get a listing online quickly with polished, MLS-ready images.',
     popular: false,
   },
   {
     title: 'PHOTO + MATTERPORT',
     price: '$349',
     features: ['Everything in Photo Only', 'Matterport 3D Tour', 'Branded Marketing Page'],
-    useCase: 'Most requested for active listings',
+    useCase: 'Our most requested package. Great for listings where an immersive walkthrough can help generate more interest.',
     popular: true,
   },
   {
     title: 'PHOTO + MATTERPORT + FLOOR PLAN',
     price: '$429',
     features: ['Everything in Photo + Matterport', '2D Floor Plan', 'Property Website'],
-    useCase: 'Best for full listing launches',
+    useCase: 'Everything needed to showcase a property online, including photos, a 3D tour, and a clear floor plan.',
     popular: false,
   },
 ]
@@ -819,6 +820,11 @@ export default function App() {
                     <a
                       href={item.homeHref}
                       className={`text-white/80 transition-colors hover:text-white ${typeBodySm}`}
+                      onClick={(event) => {
+                        if (!item.href.startsWith('/')) return
+                        event.preventDefault()
+                        navigate(item.href)
+                      }}
                     >
                       {item.label}
                     </a>
