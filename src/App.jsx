@@ -15,6 +15,8 @@ import { CONTACT_SECTION_ID, FOOTER_COMPANY_LINKS } from './siteMap'
 import { navigate } from './navigate'
 import { useContactModal } from './ContactModal'
 import { useTransformCarousel } from './useCarouselSwipe'
+import { PACKAGE_LEARN_MORE } from './services/servicePagesData'
+import ServiceAreasSection from './ServiceAreasSection'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -171,6 +173,7 @@ const PACKAGES = [
     price: '$199',
     features: ['10–15 HDR Photos', 'Professional Editing', '24 Hour Delivery'],
     useCase: 'Everything you need to get a listing online quickly with polished, MLS-ready images.',
+    learnMorePath: PACKAGE_LEARN_MORE['PHOTO ONLY'],
     popular: false,
   },
   {
@@ -178,6 +181,7 @@ const PACKAGES = [
     price: '$349',
     features: ['Everything in Photo Only', 'Matterport 3D Tour', 'Branded Marketing Page'],
     useCase: 'Our most requested package. Great for listings where an immersive walkthrough can help generate more interest.',
+    learnMorePath: PACKAGE_LEARN_MORE['PHOTO + MATTERPORT'],
     popular: true,
   },
   {
@@ -185,6 +189,7 @@ const PACKAGES = [
     price: '$429',
     features: ['Everything in Photo + Matterport', '2D Floor Plan', 'Property Website'],
     useCase: 'Everything needed to showcase a property online, including photos, a 3D tour, and a clear floor plan.',
+    learnMorePath: PACKAGE_LEARN_MORE['PHOTO + MATTERPORT + FLOOR PLAN'],
     popular: false,
   },
 ]
@@ -576,6 +581,19 @@ function PackageCard({ pkg, index, className = '' }) {
 
           <div className="package-card__footer shrink-0 border-t border-[rgba(0,0,0,0.08)]">
             <p className={`text-muted ${typeBodySm}`}>{pkg.useCase}</p>
+            {pkg.learnMorePath && (
+              <a
+                href={pkg.learnMorePath}
+                className={`package-card__learn-more ${typeLabel} text-ink`}
+                onClick={(event) => {
+                  event.preventDefault()
+                  navigate(pkg.learnMorePath)
+                }}
+              >
+                Learn More
+                <IconArrowRight className="h-3.5 w-3.5" />
+              </a>
+            )}
           </div>
 
           <div aria-hidden="true" className="package-card__tail min-h-0 flex-1" />
@@ -722,6 +740,8 @@ export default function App() {
       </section>
 
       <PackagesSection packages={PACKAGES} />
+
+      <ServiceAreasSection />
 
       {/* ── Recent Work ── */}
       <section id="portfolio" className="portfolio-section bg-cream px-6 pb-20 pt-8 md:px-10 md:pt-10 lg:pb-28">

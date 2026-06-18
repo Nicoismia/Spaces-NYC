@@ -4,6 +4,8 @@ import App from './App'
 import { TallyPopupProvider } from './TallyPopup'
 import { ContactModalProvider } from './ContactModal'
 import { scrollToSection, sectionIdFromHref } from './scrollToSection'
+import ServiceLandingPage from './services/ServiceLandingPage'
+import { getServicePageByPath } from './services/servicePagesData'
 
 function getPath() {
   return window.location.pathname.replace(/\/+$/, '') || '/'
@@ -11,6 +13,7 @@ function getPath() {
 
 export default function Router() {
   const [path, setPath] = useState(getPath)
+  const servicePage = getServicePageByPath(path)
 
   useEffect(() => {
     const onNavigate = () => setPath(getPath())
@@ -50,7 +53,13 @@ export default function Router() {
   return (
     <TallyPopupProvider>
       <ContactModalProvider>
-        {path === '/about' ? <AboutPage /> : <App />}
+        {servicePage ? (
+          <ServiceLandingPage page={servicePage} />
+        ) : path === '/about' ? (
+          <AboutPage />
+        ) : (
+          <App />
+        )}
       </ContactModalProvider>
     </TallyPopupProvider>
   )
