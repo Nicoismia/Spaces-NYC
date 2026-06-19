@@ -603,22 +603,6 @@ function PackageCard({ pkg, index, className = '' }) {
   )
 }
 
-function ServicesTallyButton({ className, children }) {
-  const { openTallyPopup } = useTallyPopup()
-
-  return (
-    <AnimatedCTAButton
-      type="button"
-      className={className}
-      onClick={(event) => openTallyPopup(event.currentTarget)}
-    >
-      {children}
-    </AnimatedCTAButton>
-  )
-}
-
-const servicesTallyBtnClass = `${typeBtn} ${typeBtnSize} ${typeBtnShadow} bg-ink text-white tracking-[0.06em] hover:bg-neutral-800`
-
 function PackagesSection({ packages }) {
   const trackRef = useRef(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -629,24 +613,18 @@ function PackagesSection({ packages }) {
   })
 
   return (
-    <section id="services" className="services-section bg-cream px-6 pt-20 pb-10 md:px-10 md:pb-12 lg:pt-24 lg:pb-14">
+    <section id="services" className="services-section bg-cream px-6 pt-14 pb-8 md:px-10 md:pt-16 md:pb-16 lg:pt-20 lg:pb-20">
       <div className="services-section__inner mx-auto w-full max-w-[1200px]">
         <FadeIn>
-          <div className="services-header mb-20">
-            <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-              <div className="min-w-0">
-                <SectionHeadline className="section-headline--mobile">
-                  Simple packages.
-                  <br />
+          <div className="services-header mb-10 md:mb-12 lg:mb-14">
+            <div className="services-header__row flex flex-col gap-8 md:flex-row md:items-end md:justify-center">
+              <div className="min-w-0 md:text-center">
+                <SectionHeadline className="section-headline--mobile services-section__headline">
+                  Simple Packages.{' '}
+                  <br className="services-section__headline-break" />
                   Everything you need.
                 </SectionHeadline>
               </div>
-              <ServicesTallyButton
-                className={`services-header__cta ${servicesTallyBtnClass} hidden shrink-0 self-start md:inline-flex md:self-auto`}
-              >
-                Check Availability
-                <IconArrowRight className="w-4 h-4" />
-              </ServicesTallyButton>
             </div>
           </div>
         </FadeIn>
@@ -682,13 +660,6 @@ function PackagesSection({ packages }) {
           </div>
         </div>
       </div>
-
-      <ServicesTallyButton
-        className={`services-mobile-cta ${servicesTallyBtnClass} w-full justify-center tracking-[0.15em] uppercase md:hidden`}
-      >
-        Request a Shoot
-        <IconArrowRight className="w-4 h-4" />
-      </ServicesTallyButton>
     </section>
   )
 }
@@ -744,13 +715,13 @@ export default function App() {
       <ServiceAreasSection />
 
       {/* ── Recent Work ── */}
-      <section id="portfolio" className="portfolio-section bg-cream px-6 pb-20 pt-8 md:px-10 md:pt-10 lg:pb-28">
+      <section id="portfolio" className="portfolio-section bg-cream px-6 pt-14 pb-8 md:px-10 md:pt-16 md:pb-16 lg:pt-20 lg:pb-20">
         <FadeIn className="portfolio-section__header mx-auto mb-10 max-w-[1360px] md:mb-12 lg:mb-14">
           <SectionHeadline className="section-headline--mobile portfolio-section__headline mb-5">
             Real spaces. Real results.
           </SectionHeadline>
-          <p className={`max-w-xl text-muted ${typeBody}`}>
-            Space, light, and layout — the way top NYC brokers present every property.
+          <p className={`portfolio-section__subheadline max-w-xl text-muted ${typeBody}`}>
+            Space, light, and layout — presented the way top NYC brokers expect.
           </p>
         </FadeIn>
 

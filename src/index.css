@@ -324,6 +324,16 @@ body {
 
 .homepage .service-areas__eyebrow {
   color: #93c5fd;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 768px) {
+  .homepage .service-areas__eyebrow {
+    font-size: 0.875rem;
+  }
 }
 
 .homepage .service-areas__body {
@@ -334,183 +344,82 @@ body {
   .homepage .service-areas__body--mobile {
     color: rgba(255, 255, 255, 0.62);
   }
-
-  .homepage .service-areas__map {
-    max-width: 100%;
-  }
 }
 
-.homepage .service-areas-map {
-  overflow: hidden;
-  border-radius: 14px;
-  background: #101010;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+.homepage .service-areas__boroughs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1.75rem;
+  row-gap: 1.5rem;
+  padding-top: 0.25rem;
 }
 
-.homepage .service-areas-map__stage {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
+.homepage .service-areas__borough--full {
+  grid-column: 1 / -1;
 }
 
-.homepage .service-areas-map__svg {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.homepage .service-areas-map__water {
-  fill: #090909;
-}
-
-.homepage .service-areas-map__basemap {
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-.homepage .service-areas-map__land {
-  fill: #171717;
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 1;
-  stroke-linejoin: round;
-}
-
-.homepage .coverage-unified {
-  filter: drop-shadow(0 0 18px rgba(96, 165, 250, 0.18));
-  pointer-events: none;
-}
-
-.homepage .coverage-unified__shape {
-  fill: rgba(96, 165, 250, 0.16);
-  stroke: #60a5fa;
-  stroke-width: 1.5;
-  stroke-linejoin: round;
-  pointer-events: none;
-}
-
-.homepage .borough__hover {
-  fill: transparent;
-  stroke: transparent;
-  stroke-width: 1.5;
-  stroke-linejoin: round;
-  transition:
-    fill 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-    stroke 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.24s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.homepage .borough__label-wrap {
-  overflow: visible;
-  pointer-events: none;
-}
-
-.homepage .borough__label-pill {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 4px 8px;
-  box-sizing: border-box;
-  background: rgba(0, 0, 0, 0.78);
-  border: 1px solid rgba(147, 197, 253, 0.65);
-  border-radius: 999px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  color: #fff;
+.homepage .service-areas__borough-name {
+  margin: 0 0 0.5rem;
+  color: #60a5fa;
   font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  line-height: 1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  line-height: 1.2;
   text-transform: uppercase;
-  white-space: nowrap;
-  transform: scale(1);
-  transform-origin: center;
-  transition: all 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.homepage .service-areas__borough-areas {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.52);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.55;
 }
 
 @media (min-width: 1024px) {
-  .homepage .borough {
-    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
-    transform-box: fill-box;
-    transform-origin: center;
+  .homepage .service-areas__boroughs {
+    column-gap: 2rem;
+    row-gap: 1.75rem;
+    padding-top: 0.5rem;
   }
 
-  .homepage .borough__hover {
-    pointer-events: all;
-    cursor: default;
+  .homepage .service-areas__borough-name {
+    font-size: 0.8125rem;
   }
 
-  .homepage .borough:hover {
-    transform: translateY(-3px);
-  }
-
-  .homepage .borough:hover .borough__hover {
-    fill: rgba(96, 165, 250, 0.28);
-    stroke: #93c5fd;
-    filter: drop-shadow(0 8px 22px rgba(96, 165, 250, 0.28));
-  }
-
-  .homepage .service-areas-map {
-    max-width: 100%;
-    margin-left: auto;
+  .homepage .service-areas__borough-areas {
+    font-size: 1.0625rem;
   }
 }
 
-@media (max-width: 1023px) {
-  .homepage .service-areas-map__stage {
-    aspect-ratio: 4 / 3;
-    max-height: 22rem;
+@media (max-width: 768px) {
+  .homepage .service-areas-section {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
   }
 
-  .homepage .borough__hover {
-    pointer-events: none;
+  .homepage .service-areas__grid {
+    gap: 1.5rem;
   }
 
-  .homepage .borough__label-pill {
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    padding: 3px 6px;
+  .homepage .service-areas__boroughs {
+    row-gap: 1.25rem;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .homepage .borough,
-  .homepage .borough__hover,
-  .homepage .borough__label-pill {
-    transition: none;
-  }
-
-  .homepage .borough:hover {
-    transform: none;
-  }
-
-  .homepage .borough:hover .borough__hover {
-    filter: none;
-  }
-
-  .homepage .borough:hover .borough__label-pill {
-    transform: none;
-  }
-}
-
-.homepage .service-areas__cta .spaces-btn {
+.homepage .service-areas__cta-wrap {
   width: 100%;
-  justify-content: center;
+  max-width: 36rem;
 }
 
-@media (min-width: 640px) {
-  .homepage .service-areas__cta .spaces-btn {
-    width: auto;
-    justify-content: flex-start;
-  }
+.homepage .service-areas__cta {
+  width: 100%;
+  padding: 1rem 2.75rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  gap: 0.75rem;
 }
 
 .homepage .package-card__tail {
@@ -685,12 +594,17 @@ body {
   }
 
   .homepage .services-section {
-    padding-top: 44px;
-    padding-bottom: 44px;
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+
+  .homepage .portfolio-section {
+    padding-top: 28px;
+    padding-bottom: 28px;
   }
 
   .homepage .services-header {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
 
   .homepage .section-headline--mobile {
@@ -705,12 +619,13 @@ body {
   .homepage .services-packages {
     margin-left: -1.5rem;
     margin-right: -1.5rem;
+    margin-bottom: 0;
     max-width: none;
     overflow-x: hidden;
     overflow-y: visible;
     touch-action: pan-y;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 
   .homepage .carousel-viewport {
@@ -737,7 +652,7 @@ body {
     touch-action: pan-y;
     align-items: stretch;
     gap: 16px;
-    padding: 14px calc((100% - 82vw) / 2) 44px;
+    padding: 8px calc((100% - 82vw) / 2) 12px;
     margin: 0;
     max-width: none;
   }
@@ -788,8 +703,8 @@ body {
     display: flex;
     justify-content: center;
     gap: 0.5rem;
-    margin-top: 18px;
-    margin-bottom: 0;
+    margin-top: 14px;
+    margin-bottom: 14px;
     padding-top: 0;
   }
 
@@ -807,7 +722,17 @@ body {
   }
 
   .homepage .services-mobile-cta {
-    margin-top: 28px;
+    margin-top: 0;
+    margin-bottom: 40px;
+    padding: 1rem 2.25rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    gap: 0.75rem;
+  }
+
+  .homepage .services-mobile-cta svg {
+    width: 1.125rem;
+    height: 1.125rem;
   }
 
   .homepage .portfolio-section__headline {
@@ -878,6 +803,19 @@ body {
     max-width: 75rem;
   }
 
+  .homepage .services-header__row {
+    justify-content: center;
+  }
+
+  .homepage .services-section__headline {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .homepage .services-section__headline-break {
+    display: none;
+  }
+
   .homepage .services-header__cta {
     padding: 1rem 2.25rem;
     font-size: 1.0625rem;
@@ -907,8 +845,8 @@ body {
     margin-right: auto;
     align-items: start;
     overflow: visible;
-    padding-top: 12px;
-    padding-bottom: 3rem;
+    padding-top: 8px;
+    padding-bottom: 1.5rem;
   }
 
   .homepage .package-carousel-viewport {
@@ -950,6 +888,20 @@ body {
 
   .homepage .portfolio-section__headline {
     font-size: 2.25rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .homepage .portfolio-section__header {
+    text-align: center;
+  }
+
+  .homepage .portfolio-section__subheadline {
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    white-space: nowrap;
   }
 
   .homepage .portfolio-gallery .portfolio-scroll {
