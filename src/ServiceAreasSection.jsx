@@ -80,12 +80,15 @@ function BoroughItem({ borough }) {
 export default function ServiceAreasSection() {
   return (
     <section
-      className="service-areas-section bg-ink px-6 pt-8 pb-8 md:px-10 md:pt-14 md:pb-20 lg:pt-16 lg:pb-24"
+      className="service-areas-section bg-ink px-6 pt-14 pb-8 md:px-10 md:pt-16 md:pb-20 lg:pt-16 lg:pb-24"
       aria-labelledby="service-areas-heading"
     >
       <FadeIn className="service-areas-section__inner mx-auto max-w-[1200px]">
         <div className="service-areas__grid grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-x-16 lg:items-start">
-          <div className="service-areas__intro">
+          <div className="service-areas__intro flex flex-col">
+            <div className="service-areas__cta-wrap order-first mb-8 md:order-last md:mb-0 md:mt-8">
+              <ServiceAreasCta />
+            </div>
             <p className="service-areas__eyebrow mb-3 md:mb-4 font-sans">
               LOCAL EXPERTS. CITYWIDE SERVICE.
             </p>
@@ -99,9 +102,6 @@ export default function ServiceAreasSection() {
               From Manhattan penthouses to Brooklyn brownstones, we provide real estate photography, Matterport tours,
               floor plans, and listing media throughout New York City.
             </p>
-            <div className="service-areas__cta-wrap mt-6 md:mt-8">
-              <ServiceAreasCta />
-            </div>
           </div>
 
           <div className="service-areas__boroughs" aria-label="New York City service areas by borough">

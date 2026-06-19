@@ -396,16 +396,21 @@ body {
 
 @media (max-width: 768px) {
   .homepage .service-areas-section {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding-top: 28px;
+    padding-bottom: 28px;
   }
 
   .homepage .service-areas__grid {
-    gap: 1.5rem;
+    gap: 2rem;
+  }
+
+  .homepage .service-areas__intro {
+    gap: 0;
   }
 
   .homepage .service-areas__boroughs {
-    row-gap: 1.25rem;
+    row-gap: 1.5rem;
+    padding-top: 0.5rem;
   }
 }
 
