@@ -396,21 +396,40 @@ body {
 
 @media (max-width: 768px) {
   .homepage .service-areas-section {
-    padding-top: 28px;
-    padding-bottom: 28px;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 
   .homepage .service-areas__grid {
-    gap: 2rem;
+    gap: 2.5rem;
   }
 
   .homepage .service-areas__intro {
     gap: 0;
   }
 
+  .homepage .service-areas__cta-wrap {
+    margin-bottom: 2.25rem;
+  }
+
+  .homepage .service-areas__eyebrow {
+    margin-bottom: 1rem;
+  }
+
+  .homepage .service-areas__intro h2 {
+    margin-bottom: 1.25rem;
+  }
+
+  .homepage .service-areas__body--mobile {
+    margin-bottom: 0.25rem;
+  }
+
   .homepage .service-areas__boroughs {
-    row-gap: 1.5rem;
-    padding-top: 0.5rem;
+    row-gap: 1.75rem;
+    column-gap: 2rem;
+    padding-top: 0.75rem;
   }
 }
 
