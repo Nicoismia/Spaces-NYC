@@ -11,12 +11,12 @@ import {
   companyTel,
 } from './contact'
 import { useTallyPopup } from './TallyPopup'
-import { CONTACT_SECTION_ID, FOOTER_COMPANY_LINKS } from './siteMap'
+import { CONTACT_SECTION_ID, FOOTER_QUICK_LINKS, FOOTER_SERVICE_AREAS, FOOTER_SEO_LINE } from './siteMap'
 import { navigate } from './navigate'
 import { useContactModal } from './ContactModal'
 import { useTransformCarousel } from './useCarouselSwipe'
+import { guardCarouselTap } from './carouselDragGuard'
 import { PACKAGE_LEARN_MORE } from './services/servicePagesData'
-import ServiceAreasSection from './ServiceAreasSection'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -408,6 +408,15 @@ function PortfolioLightbox({ items, activeIndex, onClose, onPrev, onNext }) {
   )
 }
 
+function CarouselSwipeHints() {
+  return (
+    <div className="carousel-swipe-hints" aria-hidden="true">
+      <span className="carousel-swipe-hint carousel-swipe-hint--left">‹</span>
+      <span className="carousel-swipe-hint carousel-swipe-hint--right">›</span>
+    </div>
+  )
+}
+
 function PortfolioGallery({ items }) {
   const trackRef = useRef(null)
   useTransformCarousel(trackRef, { slideSelector: '[data-portfolio-card]' })
@@ -426,13 +435,17 @@ function PortfolioGallery({ items }) {
   return (
     <div className="portfolio-gallery relative mx-auto w-full max-w-[1360px]">
       <div className="portfolio-gallery__track carousel-viewport relative w-full">
+        <CarouselSwipeHints />
         <div ref={trackRef} className="carousel-track portfolio-scroll w-full">
           {items.map((image, index) => (
             <button
               key={image}
               type="button"
               data-portfolio-card
-              onClick={() => setLightboxIndex(index)}
+              onClick={(event) => {
+                if (guardCarouselTap(event)) return
+                setLightboxIndex(index)
+              }}
               className="group relative shrink-0 snap-center overflow-hidden rounded-[14px] bg-neutral-100"
             >
               <img
@@ -586,6 +599,7 @@ function PackageCard({ pkg, index, className = '' }) {
                 href={pkg.learnMorePath}
                 className={`package-card__learn-more ${typeLabel} text-ink`}
                 onClick={(event) => {
+                  if (guardCarouselTap(event)) return
                   event.preventDefault()
                   navigate(pkg.learnMorePath)
                 }}
@@ -603,6 +617,22 @@ function PackageCard({ pkg, index, className = '' }) {
   )
 }
 
+function ServicesTallyButton({ className, children }) {
+  const { openTallyPopup } = useTallyPopup()
+
+  return (
+    <AnimatedCTAButton
+      type="button"
+      className={className}
+      onClick={(event) => openTallyPopup(event.currentTarget)}
+    >
+      {children}
+    </AnimatedCTAButton>
+  )
+}
+
+const servicesTallyBtnClass = `${typeBtn} ${typeBtnSize} ${typeBtnShadow} bg-ink text-white tracking-[0.06em] hover:bg-neutral-800`
+
 function PackagesSection({ packages }) {
   const trackRef = useRef(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -613,24 +643,31 @@ function PackagesSection({ packages }) {
   })
 
   return (
-    <section id="services" className="services-section bg-cream px-6 pt-14 pb-8 md:px-10 md:pt-16 md:pb-16 lg:pt-20 lg:pb-20">
+    <section id="services" className="services-section bg-cream px-6 pt-14 pb-6 md:px-10 md:pt-16 md:pb-10 lg:pt-20 lg:pb-12">
       <div className="services-section__inner mx-auto w-full max-w-[1200px]">
         <FadeIn>
-          <div className="services-header mb-10 md:mb-12 lg:mb-14">
-            <div className="services-header__row flex flex-col gap-8 md:flex-row md:items-end md:justify-center">
-              <div className="min-w-0 md:text-center">
+          <div className="services-header mb-12 md:mb-14 lg:mb-16">
+            <div className="services-header__row flex flex-col md:grid md:grid-cols-3 md:items-center md:gap-8">
+              <div className="services-header__headline min-w-0 md:col-span-2">
                 <SectionHeadline className="section-headline--mobile services-section__headline">
                   Simple Packages.{' '}
                   <br className="services-section__headline-break" />
                   Everything you need.
                 </SectionHeadline>
               </div>
+              <ServicesTallyButton
+                className={`services-header__cta ${servicesTallyBtnClass} hidden shrink-0 md:inline-flex md:col-start-3 md:justify-self-end`}
+              >
+                Check Availability
+                <IconArrowRight className="h-4 w-4" />
+              </ServicesTallyButton>
             </div>
           </div>
         </FadeIn>
 
         <div className="services-packages">
           <div className="package-carousel-viewport carousel-viewport">
+            <CarouselSwipeHints />
             <div
               ref={trackRef}
               className="carousel-track package-carousel package-grid grid grid-cols-1 gap-8 md:grid-cols-3"
@@ -659,6 +696,13 @@ function PackagesSection({ packages }) {
             ))}
           </div>
         </div>
+
+        <ServicesTallyButton
+          className={`services-mobile-cta ${servicesTallyBtnClass} w-full justify-center md:hidden`}
+        >
+          Check Availability
+          <IconArrowRight className="h-4 w-4" />
+        </ServicesTallyButton>
       </div>
     </section>
   )
@@ -712,10 +756,8 @@ export default function App() {
 
       <PackagesSection packages={PACKAGES} />
 
-      <ServiceAreasSection />
-
       {/* ── Recent Work ── */}
-      <section id="portfolio" className="portfolio-section bg-cream px-6 pt-14 pb-8 md:px-10 md:pt-16 md:pb-16 lg:pt-20 lg:pb-20">
+      <section id="portfolio" className="portfolio-section bg-cream px-6 pt-8 pb-8 md:px-10 md:pt-10 md:pb-16 lg:pt-12 lg:pb-20">
         <FadeIn className="portfolio-section__header mx-auto mb-10 max-w-[1360px] md:mb-12 lg:mb-14">
           <SectionHeadline className="section-headline--mobile portfolio-section__headline mb-5">
             Real spaces. Real results.
@@ -780,37 +822,28 @@ export default function App() {
 
         <footer className="site-footer px-6 pb-16 text-white md:px-10 lg:px-16">
         <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
+          <div className="site-footer__grid grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-12">
+            <div className="site-footer__brand">
               <Logo className="mb-4 h-6 brightness-0 invert" />
-              <p className={`text-white/70 ${typeBodySm}`}>Real estate media made for NYC.</p>
+              <p className="site-footer__tagline">Real estate media made for NYC.</p>
+              <div className="site-footer__social mt-5 flex gap-4">
+                <a href="#" aria-label="Instagram" className="text-white/65 transition-colors hover:text-white">
+                  <IconInstagram />
+                </a>
+                <a href={companyMailto} aria-label="Email" className="text-white/65 transition-colors hover:text-white">
+                  <IconMail />
+                </a>
+              </div>
             </div>
 
-            <div>
-              <SectionLabel light className="mb-4 text-white/55">
-                Services
-              </SectionLabel>
-              <ul className="space-y-2.5">
-                {['Photography', 'Matterport', 'Floor Plans', 'Packages'].map((item) => (
-                  <li key={item}>
-                    <a href="#services" className={`text-white/80 transition-colors hover:text-white ${typeBodySm}`}>
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <SectionLabel light className="mb-4 text-white/55">
-                Company
-              </SectionLabel>
-              <ul className="space-y-2.5">
-                {FOOTER_COMPANY_LINKS.map((item) => (
+            <div className="site-footer__links">
+              <p className="site-footer__heading">Quick Links</p>
+              <ul className="site-footer__link-list">
+                {FOOTER_QUICK_LINKS.map((item) => (
                   <li key={item.label}>
                     <a
                       href={item.homeHref}
-                      className={`text-white/80 transition-colors hover:text-white ${typeBodySm}`}
+                      className="site-footer__link"
                       onClick={(event) => {
                         if (!item.href.startsWith('/')) return
                         event.preventDefault()
@@ -824,41 +857,28 @@ export default function App() {
               </ul>
             </div>
 
-            <div>
-              <SectionLabel light className="mb-4 text-white/55">
-                Contact
-              </SectionLabel>
-              <ul className={`space-y-2.5 text-white/80 ${typeBodySm}`}>
-                <li>
-                  <a href={companyTel} className="transition-colors hover:text-white">
-                    {COMPANY_PHONE_DISPLAY}
-                  </a>
-                </li>
-                <li>
-                  <a href={companyMailto} className="transition-colors hover:text-white">
-                    {COMPANY_EMAIL_DISPLAY}
-                  </a>
-                </li>
-                <li>New York City</li>
+            <div className="site-footer__areas">
+              <p className="site-footer__heading">Service Areas</p>
+              <ul className="site-footer__area-list">
+                {FOOTER_SERVICE_AREAS.map((area) => (
+                  <li key={area.borough} className="site-footer__area-item">
+                    <p className="site-footer__borough">{area.borough}</p>
+                    <p className="site-footer__neighborhoods">{area.areas}</p>
+                  </li>
+                ))}
               </ul>
-              <div className="mt-6 flex gap-4">
-                <a href="#" aria-label="Instagram" className="text-white/65 transition-colors hover:text-white">
-                  <IconInstagram />
-                </a>
-                <a href={companyMailto} aria-label="Email" className="text-white/65 transition-colors hover:text-white">
-                  <IconMail />
-                </a>
-              </div>
             </div>
           </div>
 
-          <div className={`mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-white/55 sm:flex-row ${typeBodySm}`}>
-            <p>© {new Date().getFullYear()} Spaces NYC. All rights reserved.</p>
+          <p className="site-footer__seo">{FOOTER_SEO_LINE}</p>
+
+          <div className="site-footer__bottom flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-white/55 sm:flex-row">
+            <p className="site-footer__copyright">© {new Date().getFullYear()} Spaces NYC. All rights reserved.</p>
             <div className="flex gap-6">
-              <a href="#" className="transition-colors hover:text-white">
+              <a href="#" className="site-footer__legal transition-colors hover:text-white">
                 Privacy Policy
               </a>
-              <a href="#" className="transition-colors hover:text-white">
+              <a href="#" className="site-footer__legal transition-colors hover:text-white">
                 Terms of Service
               </a>
             </div>

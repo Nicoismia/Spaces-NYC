@@ -156,6 +156,10 @@ body {
   display: none;
 }
 
+.homepage .carousel-swipe-hints {
+  display: none;
+}
+
 /* Portfolio — featured editorial gallery */
 .homepage .portfolio-section__headline {
   font-weight: 700;
@@ -317,133 +321,117 @@ body {
   opacity: 0.72;
 }
 
-.homepage .service-areas-section {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: #fff;
-}
-
-.homepage .service-areas__eyebrow {
-  color: #93c5fd;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-@media (min-width: 768px) {
-  .homepage .service-areas__eyebrow {
-    font-size: 0.875rem;
-  }
-}
-
-.homepage .service-areas__body {
-  color: rgba(255, 255, 255, 0.72);
-}
-
-@media (max-width: 1023px) {
-  .homepage .service-areas__body--mobile {
-    color: rgba(255, 255, 255, 0.62);
-  }
-}
-
-.homepage .service-areas__boroughs {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 1.75rem;
-  row-gap: 1.5rem;
-  padding-top: 0.25rem;
-}
-
-.homepage .service-areas__borough--full {
-  grid-column: 1 / -1;
-}
-
-.homepage .service-areas__borough-name {
-  margin: 0 0 0.5rem;
+.homepage .site-footer__heading {
+  margin: 0 0 0.875rem;
   color: #60a5fa;
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   line-height: 1.2;
   text-transform: uppercase;
 }
 
-.homepage .service-areas__borough-areas {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.52);
+.homepage .site-footer__tagline,
+.homepage .site-footer__link,
+.homepage .site-footer__copyright,
+.homepage .site-footer__legal {
   font-family: var(--font-sans);
-  font-size: 0.9375rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.homepage .site-footer__tagline {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.homepage .site-footer__link-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.homepage .site-footer__link-list li + li {
+  margin-top: 0.375rem;
+}
+
+.homepage .site-footer__link {
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.homepage .site-footer__link:hover {
+  color: #fff;
+}
+
+.homepage .site-footer__area-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.homepage .site-footer__area-item + .site-footer__area-item {
+  margin-top: 0.625rem;
+}
+
+.homepage .site-footer__borough {
+  margin: 0 0 0.125rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.homepage .site-footer__neighborhoods {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.42);
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.homepage .site-footer__seo {
+  margin: 2rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.38);
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
   font-weight: 400;
   line-height: 1.55;
 }
 
-@media (min-width: 1024px) {
-  .homepage .service-areas__boroughs {
-    column-gap: 2rem;
-    row-gap: 1.75rem;
-    padding-top: 0.5rem;
-  }
-
-  .homepage .service-areas__borough-name {
-    font-size: 0.8125rem;
-  }
-
-  .homepage .service-areas__borough-areas {
-    font-size: 1.0625rem;
-  }
+.homepage .site-footer__bottom {
+  margin-top: 1.25rem;
 }
 
-@media (max-width: 768px) {
-  .homepage .service-areas-section {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
+@media (max-width: 767px) {
+  .homepage .site-footer__grid {
+    gap: 1.75rem;
   }
 
-  .homepage .service-areas__grid {
-    gap: 2.5rem;
+  .homepage .site-footer__areas {
+    order: 3;
   }
 
-  .homepage .service-areas__intro {
-    gap: 0;
+  .homepage .site-footer__links {
+    order: 2;
   }
 
-  .homepage .service-areas__cta-wrap {
-    margin-bottom: 2.25rem;
+  .homepage .site-footer__brand {
+    order: 1;
   }
 
-  .homepage .service-areas__eyebrow {
-    margin-bottom: 1rem;
+  .homepage .site-footer__seo {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    font-size: 0.625rem;
   }
-
-  .homepage .service-areas__intro h2 {
-    margin-bottom: 1.25rem;
-  }
-
-  .homepage .service-areas__body--mobile {
-    margin-bottom: 0.25rem;
-  }
-
-  .homepage .service-areas__boroughs {
-    row-gap: 1.75rem;
-    column-gap: 2rem;
-    padding-top: 0.75rem;
-  }
-}
-
-.homepage .service-areas__cta-wrap {
-  width: 100%;
-  max-width: 36rem;
-}
-
-.homepage .service-areas__cta {
-  width: 100%;
-  padding: 1rem 2.75rem;
-  font-size: 1.0625rem;
-  font-weight: 600;
-  gap: 0.75rem;
 }
 
 .homepage .package-card__tail {
@@ -618,22 +606,25 @@ body {
   }
 
   .homepage .services-section {
-    padding-top: 28px;
-    padding-bottom: 28px;
+    padding-top: 56px;
+    padding-bottom: 0;
   }
 
   .homepage .portfolio-section {
-    padding-top: 28px;
-    padding-bottom: 28px;
+    padding-top: 48px;
+    padding-bottom: 40px;
   }
 
   .homepage .services-header {
-    margin-bottom: 8px;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    margin-bottom: 24px;
+    padding-left: calc((100% - 82vw) / 2);
+    padding-right: calc((100% - 82vw) / 2);
   }
 
-  .homepage .section-headline--mobile {
-    font-size: 1.75rem;
-    line-height: 0.99;
+  .homepage .services-section__headline {
+    text-align: left;
   }
 
   .homepage .services-header__cta {
@@ -653,8 +644,40 @@ body {
   }
 
   .homepage .carousel-viewport {
+    position: relative;
     overflow: hidden;
     touch-action: pan-y;
+  }
+
+  .homepage .carousel-swipe-hints {
+    display: block;
+  }
+
+  .homepage .carousel-swipe-hint {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    transform: translateY(-50%);
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.45);
+    opacity: 0.3;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .homepage .carousel-swipe-hint--left {
+    left: 0.25rem;
+  }
+
+  .homepage .carousel-swipe-hint--right {
+    right: 0.25rem;
+  }
+
+  .homepage .section-headline--mobile {
+    font-size: 1.75rem;
+    line-height: 0.99;
   }
 
   .homepage .carousel-track {
@@ -728,8 +751,25 @@ body {
     justify-content: center;
     gap: 0.5rem;
     margin-top: 14px;
-    margin-bottom: 14px;
+    margin-bottom: 0;
     padding-top: 0;
+  }
+
+  .homepage .services-mobile-cta {
+    display: inline-flex;
+    width: 100%;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 48px;
+    padding: 1rem 2.25rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    gap: 0.75rem;
+  }
+
+  .homepage .services-mobile-cta svg {
+    width: 1.125rem;
+    height: 1.125rem;
   }
 
   .homepage .package-carousel-dots span {
@@ -745,23 +785,13 @@ body {
     transform: scale(1.15);
   }
 
-  .homepage .services-mobile-cta {
-    margin-top: 0;
-    margin-bottom: 40px;
-    padding: 1rem 2.25rem;
-    font-size: 1.0625rem;
-    font-weight: 600;
-    gap: 0.75rem;
-  }
-
-  .homepage .services-mobile-cta svg {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
   .homepage .portfolio-section__headline {
     font-size: 1.75rem;
     line-height: 0.99;
+  }
+
+  .homepage .portfolio-section__header {
+    margin-bottom: 24px;
   }
 
   .homepage .portfolio-gallery {
@@ -811,6 +841,10 @@ body {
 }
 
 @media (min-width: 769px) {
+  .homepage .carousel-swipe-hints {
+    display: none;
+  }
+
   .homepage .package-carousel-slide {
     transform: none;
     opacity: 1;
@@ -828,11 +862,11 @@ body {
   }
 
   .homepage .services-header__row {
-    justify-content: center;
+    width: 100%;
   }
 
   .homepage .services-section__headline {
-    text-align: center;
+    text-align: left;
     white-space: nowrap;
   }
 
@@ -841,13 +875,15 @@ body {
   }
 
   .homepage .services-header__cta {
+    display: inline-flex;
+    width: auto;
+    justify-content: center;
     padding: 1rem 2.25rem;
     font-size: 1.0625rem;
     font-weight: 600;
     gap: 0.75rem;
     letter-spacing: 0.07em;
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.22);
-    margin-right: 5%;
   }
 
   .homepage .services-header__cta svg {

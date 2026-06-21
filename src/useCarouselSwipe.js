@@ -1,7 +1,15 @@
 import { useEffect, useRef } from 'react'
+import {
+  guardCarouselTap,
+  markCarouselDragEnd,
+  markCarouselDragStart,
+  markCarouselHorizontalDrag,
+  shouldBlockCarouselTap,
+  TAP_MOVE_THRESHOLD,
+} from './carouselDragGuard'
 
 const MOBILE_QUERY = '(max-width: 768px)'
-const AXIS_LOCK_THRESHOLD = 8
+const AXIS_LOCK_THRESHOLD = TAP_MOVE_THRESHOLD
 const SWIPE_DISTANCE_THRESHOLD = 25
 const SWIPE_VELOCITY_THRESHOLD = 0.2
 const CAROUSEL_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
@@ -129,12 +137,15 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
       const touch = event.touches[0]
       if (!touch) return
 
+      markCarouselDragStart()
+
       gestureRef.current = {
         startX: touch.clientX,
         startY: touch.clientY,
         startTime: performance.now(),
         startTranslate: readTranslateX(track),
         axis: null,
+        isDragging: false,
       }
 
       track.style.transition = 'none'
@@ -163,6 +174,11 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
         return
       }
 
+      if (Math.abs(deltaX) > TAP_MOVE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY)) {
+        gesture.isDragging = true
+        markCarouselHorizontalDrag()
+      }
+
       event.preventDefault()
 
       const slides = getSlides(track, slideSelector)
@@ -183,12 +199,14 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
 
       const touch = event.changedTouches[0]
       if (!touch) {
+        markCarouselDragEnd(gesture.isDragging)
         resetGesture()
         return
       }
 
       const slides = getSlides(track, slideSelector)
       if (!slides.length) {
+        markCarouselDragEnd(gesture.isDragging)
         resetGesture()
         return
       }
@@ -197,20 +215,32 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
       const elapsed = Math.max(performance.now() - gesture.startTime, 1)
       const velocity = deltaX / elapsed
       const currentX = readTranslateX(track)
-      const closest = getClosestIndex(track, viewport, slides, currentX)
+      const startIndex = stateRef.current.index
 
-      let target = closest
+      let target = startIndex
       const distanceTrigger = Math.abs(deltaX) > SWIPE_DISTANCE_THRESHOLD
       const velocityTrigger = Math.abs(velocity) > SWIPE_VELOCITY_THRESHOLD
 
       if (distanceTrigger || velocityTrigger) {
         const intent = velocityTrigger ? velocity : deltaX
         const direction = intent < 0 ? 1 : -1
-        target = Math.max(0, Math.min(slides.length - 1, closest + direction))
+        target = Math.max(0, Math.min(slides.length - 1, startIndex + direction))
+      } else {
+        target = getClosestIndex(track, viewport, slides, currentX)
       }
+
+      const didSwipe = distanceTrigger || velocityTrigger
+      markCarouselDragEnd(gesture.isDragging || didSwipe)
 
       goToIndex(target, { animate: true, notify: true })
       resetGesture()
+    }
+
+    const onClickCapture = (event) => {
+      if (shouldBlockCarouselTap()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
     }
 
     const onMediaChange = () => syncLayout({ animate: false })
@@ -225,6 +255,7 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
     track.addEventListener('touchmove', onTouchMove, { passive: false })
     track.addEventListener('touchend', onTouchEnd, { passive: true })
     track.addEventListener('touchcancel', onTouchEnd, { passive: true })
+    track.addEventListener('click', onClickCapture, true)
     mobileQuery.addEventListener('change', onMediaChange)
 
     return () => {
@@ -233,6 +264,7 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
       track.removeEventListener('touchmove', onTouchMove)
       track.removeEventListener('touchend', onTouchEnd)
       track.removeEventListener('touchcancel', onTouchEnd)
+      track.removeEventListener('click', onClickCapture, true)
       mobileQuery.removeEventListener('change', onMediaChange)
       track.style.transition = ''
       track.style.transform = ''
