@@ -15,8 +15,7 @@ import { CONTACT_SECTION_ID, FOOTER_QUICK_LINKS, FOOTER_SERVICE_AREAS, FOOTER_SE
 import { navigate } from './navigate'
 import { useContactModal } from './ContactModal'
 import { useTransformCarousel } from './useCarouselSwipe'
-import { guardCarouselTap, TAP_MOVE_THRESHOLD } from './carouselDragGuard'
-import { PACKAGE_LEARN_MORE } from './services/servicePagesData'
+import { guardCarouselTap } from './carouselDragGuard'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -173,7 +172,6 @@ const PACKAGES = [
     price: '$199',
     features: ['10–15 HDR Photos', 'Professional Editing', '24 Hour Delivery'],
     useCase: 'Everything you need to get a listing online quickly with polished, MLS-ready images.',
-    learnMorePath: PACKAGE_LEARN_MORE['PHOTO ONLY'],
     popular: false,
   },
   {
@@ -181,7 +179,6 @@ const PACKAGES = [
     price: '$349',
     features: ['Everything in Photo Only', 'Matterport 3D Tour', 'Branded Marketing Page'],
     useCase: 'Our most requested package. Great for listings where an immersive walkthrough can help generate more interest.',
-    learnMorePath: PACKAGE_LEARN_MORE['PHOTO + MATTERPORT'],
     popular: true,
   },
   {
@@ -189,7 +186,6 @@ const PACKAGES = [
     price: '$429',
     features: ['Everything in Photo + Matterport', '2D Floor Plan', 'Property Website'],
     useCase: 'Everything needed to showcase a property online, including photos, a 3D tour, and a clear floor plan.',
-    learnMorePath: PACKAGE_LEARN_MORE['PHOTO + MATTERPORT + FLOOR PLAN'],
     popular: false,
   },
 ]
@@ -565,47 +561,6 @@ function HeroFeatureBar({ features }) {
   )
 }
 
-function PackageLearnMoreLink({ href, className, children }) {
-  const touchRef = useRef({ startX: 0, startY: 0, moved: false })
-
-  return (
-    <a
-      href={href}
-      className={className}
-      onTouchStart={(event) => {
-        const touch = event.touches[0]
-        if (!touch) return
-        touchRef.current = { startX: touch.clientX, startY: touch.clientY, moved: false }
-      }}
-      onTouchMove={(event) => {
-        const touch = event.touches[0]
-        if (!touch) return
-        const deltaX = Math.abs(touch.clientX - touchRef.current.startX)
-        const deltaY = Math.abs(touch.clientY - touchRef.current.startY)
-        if (deltaX > TAP_MOVE_THRESHOLD || deltaY > TAP_MOVE_THRESHOLD) {
-          touchRef.current.moved = true
-        }
-      }}
-      onTouchEnd={(event) => {
-        if (touchRef.current.moved) {
-          event.preventDefault()
-        }
-      }}
-      onClick={(event) => {
-        if (guardCarouselTap(event) || touchRef.current.moved) {
-          event.preventDefault()
-          event.stopPropagation()
-          return
-        }
-        event.preventDefault()
-        navigate(href)
-      }}
-    >
-      {children}
-    </a>
-  )
-}
-
 function PackageCard({ pkg, index, className = '' }) {
   return (
     <FadeIn delay={index * 0.1} className="h-full w-full">
@@ -635,18 +590,8 @@ function PackageCard({ pkg, index, className = '' }) {
 
           <div className="package-card__footer shrink-0 border-t border-[rgba(0,0,0,0.08)]">
             <p className={`text-muted ${typeBodySm}`}>{pkg.useCase}</p>
-            {pkg.learnMorePath && (
-              <PackageLearnMoreLink
-                href={pkg.learnMorePath}
-                className={`package-card__learn-more ${typeLabel} text-ink`}
-              >
-                Learn More
-                <IconArrowRight className="h-3.5 w-3.5" />
-              </PackageLearnMoreLink>
-            )}
+            {/* Service detail pages will be added later */}
           </div>
-
-          <div aria-hidden="true" className="package-card__tail min-h-0 flex-1" />
         </div>
       </article>
     </FadeIn>
