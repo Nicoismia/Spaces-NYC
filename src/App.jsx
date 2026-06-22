@@ -11,7 +11,7 @@ import {
   companyTel,
 } from './contact'
 import { useTallyPopup } from './TallyPopup'
-import { CONTACT_SECTION_ID, FOOTER_QUICK_LINKS, FOOTER_SERVICE_AREAS, FOOTER_SEO_LINE } from './siteMap'
+import { CONTACT_SECTION_ID, FOOTER_QUICK_LINKS, FOOTER_SERVICE_AREAS, FOOTER_SEO_LINE, INSTAGRAM_URL } from './siteMap'
 import { navigate } from './navigate'
 import { useContactModal } from './ContactModal'
 import { useTransformCarousel } from './useCarouselSwipe'
@@ -808,7 +808,13 @@ export default function App() {
               <Logo className="mb-4 h-6 brightness-0 invert" />
               <p className="site-footer__tagline">Real estate media made for NYC.</p>
               <div className="site-footer__social mt-5 flex gap-4">
-                <a href="#" aria-label="Instagram" className="text-white/65 transition-colors hover:text-white">
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="text-white/65 transition-colors hover:text-white"
+                >
                   <IconInstagram />
                 </a>
                 <a href={companyMailto} aria-label="Email" className="text-white/65 transition-colors hover:text-white">

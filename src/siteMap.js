@@ -1,6 +1,8 @@
 /** Site routes and homepage sections — single source of truth for nav, footer, and sitemap. */
 export const SITE_URL = 'https://spaces-nyc.com'
 
+export const INSTAGRAM_URL = 'https://www.instagram.com/spacesphotographynyc?utm_source=qr'
+
 export const SITE_MAP = [
   { id: 'services', navLabel: 'SERVICES', footerLabel: 'Services', href: '/#services' },
   { id: 'portfolio', navLabel: 'PORTFOLIO', footerLabel: 'Portfolio', href: '/#portfolio' },

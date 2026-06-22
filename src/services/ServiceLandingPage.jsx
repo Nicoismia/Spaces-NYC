@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { spacesBtn, typeBtnShadow, typeBtnSize } from '../buttons'
 import { COMPANY_EMAIL_DISPLAY, COMPANY_PHONE_DISPLAY, companyMailto, companyTel } from '../contact'
 import { navigate } from '../navigate'
-import { FOOTER_COMPANY_LINKS } from '../siteMap'
+import { FOOTER_COMPANY_LINKS, INSTAGRAM_URL } from '../siteMap'
 import SiteHeader from '../SiteHeader'
 import { useTallyPopup } from '../TallyPopup'
 import { usePageMeta } from '../usePageMeta'
@@ -343,7 +343,13 @@ export default function ServiceLandingPage({ page }) {
                 <li>New York City</li>
               </ul>
               <div className="mt-6 flex gap-4">
-                <a href="#" aria-label="Instagram" className="text-white/65 transition-colors hover:text-white">
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="text-white/65 transition-colors hover:text-white"
+                >
                   <IconInstagram />
                 </a>
                 <a href={companyMailto} aria-label="Email" className="text-white/65 transition-colors hover:text-white">
