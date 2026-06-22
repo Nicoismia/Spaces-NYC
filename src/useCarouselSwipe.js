@@ -1,15 +1,15 @@
 import { useEffect, useRef } from 'react'
 import {
-  guardCarouselTap,
+  HORIZONTAL_DRAG_THRESHOLD,
+  isEdgeGesture,
+  markCarouselDrag,
   markCarouselDragEnd,
   markCarouselDragStart,
-  markCarouselHorizontalDrag,
   shouldBlockCarouselTap,
   TAP_MOVE_THRESHOLD,
 } from './carouselDragGuard'
 
 const MOBILE_QUERY = '(max-width: 768px)'
-const AXIS_LOCK_THRESHOLD = TAP_MOVE_THRESHOLD
 const SWIPE_DISTANCE_THRESHOLD = 25
 const SWIPE_VELOCITY_THRESHOLD = 0.2
 const CAROUSEL_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
@@ -146,6 +146,12 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
         startTranslate: readTranslateX(track),
         axis: null,
         isDragging: false,
+        moved: false,
+        isEdgeGesture: isEdgeGesture(touch.clientX),
+      }
+
+      if (gestureRef.current.isEdgeGesture) {
+        return
       }
 
       track.style.transition = 'none'
@@ -157,13 +163,18 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
 
       const gesture = gestureRef.current
       const touch = event.touches[0]
-      if (!gesture || !touch) return
+      if (!gesture || !touch || gesture.isEdgeGesture) return
 
       const deltaX = touch.clientX - gesture.startX
       const deltaY = touch.clientY - gesture.startY
 
+      if (Math.abs(deltaX) > TAP_MOVE_THRESHOLD || Math.abs(deltaY) > TAP_MOVE_THRESHOLD) {
+        gesture.moved = true
+        markCarouselDrag()
+      }
+
       if (gesture.axis === null) {
-        if (Math.abs(deltaX) < AXIS_LOCK_THRESHOLD && Math.abs(deltaY) < AXIS_LOCK_THRESHOLD) {
+        if (Math.abs(deltaX) < HORIZONTAL_DRAG_THRESHOLD && Math.abs(deltaY) < HORIZONTAL_DRAG_THRESHOLD) {
           return
         }
 
@@ -174,9 +185,13 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
         return
       }
 
-      if (Math.abs(deltaX) > TAP_MOVE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (Math.abs(deltaX) > HORIZONTAL_DRAG_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY)) {
         gesture.isDragging = true
-        markCarouselHorizontalDrag()
+        markCarouselDrag()
+      }
+
+      if (!gesture.isDragging) {
+        return
       }
 
       event.preventDefault()
@@ -192,21 +207,38 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
       if (!mobileQuery.matches) return
 
       const gesture = gestureRef.current
-      if (!gesture || gesture.axis !== 'x') {
+      if (!gesture) {
+        return
+      }
+
+      if (gesture.isEdgeGesture) {
+        resetGesture()
+        return
+      }
+
+      const suppressClick = gesture.moved || gesture.isDragging
+
+      if (suppressClick) {
+        event.preventDefault()
+        markCarouselDragEnd(true)
+      }
+
+      if (!gesture.axis || gesture.axis !== 'x') {
+        if (!suppressClick) {
+          markCarouselDragEnd(false)
+        }
         resetGesture()
         return
       }
 
       const touch = event.changedTouches[0]
       if (!touch) {
-        markCarouselDragEnd(gesture.isDragging)
         resetGesture()
         return
       }
 
       const slides = getSlides(track, slideSelector)
       if (!slides.length) {
-        markCarouselDragEnd(gesture.isDragging)
         resetGesture()
         return
       }
@@ -229,9 +261,6 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
         target = getClosestIndex(track, viewport, slides, currentX)
       }
 
-      const didSwipe = distanceTrigger || velocityTrigger
-      markCarouselDragEnd(gesture.isDragging || didSwipe)
-
       goToIndex(target, { animate: true, notify: true })
       resetGesture()
     }
@@ -253,8 +282,8 @@ export function useTransformCarousel(trackRef, { slideSelector, index, onIndexCh
 
     track.addEventListener('touchstart', onTouchStart, { passive: true })
     track.addEventListener('touchmove', onTouchMove, { passive: false })
-    track.addEventListener('touchend', onTouchEnd, { passive: true })
-    track.addEventListener('touchcancel', onTouchEnd, { passive: true })
+    track.addEventListener('touchend', onTouchEnd, { passive: false })
+    track.addEventListener('touchcancel', onTouchEnd, { passive: false })
     track.addEventListener('click', onClickCapture, true)
     mobileQuery.addEventListener('change', onMediaChange)
 
@@ -334,6 +363,7 @@ export function useIndexCarouselSwipe(elementRef, { onStep }) {
         startY: touch.clientY,
         startTime: performance.now(),
         axis: null,
+        isEdgeGesture: isEdgeGesture(touch.clientX),
       }
     }
 
@@ -342,13 +372,13 @@ export function useIndexCarouselSwipe(elementRef, { onStep }) {
 
       const gesture = gestureRef.current
       const touch = event.touches[0]
-      if (!gesture || !touch) return
+      if (!gesture || !touch || gesture.isEdgeGesture) return
 
       const deltaX = touch.clientX - gesture.startX
       const deltaY = touch.clientY - gesture.startY
 
       if (gesture.axis === null) {
-        if (Math.abs(deltaX) < AXIS_LOCK_THRESHOLD && Math.abs(deltaY) < AXIS_LOCK_THRESHOLD) {
+        if (Math.abs(deltaX) < HORIZONTAL_DRAG_THRESHOLD && Math.abs(deltaY) < HORIZONTAL_DRAG_THRESHOLD) {
           return
         }
 
@@ -364,7 +394,7 @@ export function useIndexCarouselSwipe(elementRef, { onStep }) {
       if (!mobileQuery.matches) return
 
       const gesture = gestureRef.current
-      if (!gesture || gesture.axis !== 'x') {
+      if (!gesture || gesture.isEdgeGesture || gesture.axis !== 'x') {
         resetGesture()
         return
       }

@@ -15,7 +15,7 @@ import { CONTACT_SECTION_ID, FOOTER_QUICK_LINKS, FOOTER_SERVICE_AREAS, FOOTER_SE
 import { navigate } from './navigate'
 import { useContactModal } from './ContactModal'
 import { useTransformCarousel } from './useCarouselSwipe'
-import { guardCarouselTap } from './carouselDragGuard'
+import { guardCarouselTap, TAP_MOVE_THRESHOLD } from './carouselDragGuard'
 import { PACKAGE_LEARN_MORE } from './services/servicePagesData'
 
 const fadeUp = {
@@ -565,6 +565,47 @@ function HeroFeatureBar({ features }) {
   )
 }
 
+function PackageLearnMoreLink({ href, className, children }) {
+  const touchRef = useRef({ startX: 0, startY: 0, moved: false })
+
+  return (
+    <a
+      href={href}
+      className={className}
+      onTouchStart={(event) => {
+        const touch = event.touches[0]
+        if (!touch) return
+        touchRef.current = { startX: touch.clientX, startY: touch.clientY, moved: false }
+      }}
+      onTouchMove={(event) => {
+        const touch = event.touches[0]
+        if (!touch) return
+        const deltaX = Math.abs(touch.clientX - touchRef.current.startX)
+        const deltaY = Math.abs(touch.clientY - touchRef.current.startY)
+        if (deltaX > TAP_MOVE_THRESHOLD || deltaY > TAP_MOVE_THRESHOLD) {
+          touchRef.current.moved = true
+        }
+      }}
+      onTouchEnd={(event) => {
+        if (touchRef.current.moved) {
+          event.preventDefault()
+        }
+      }}
+      onClick={(event) => {
+        if (guardCarouselTap(event) || touchRef.current.moved) {
+          event.preventDefault()
+          event.stopPropagation()
+          return
+        }
+        event.preventDefault()
+        navigate(href)
+      }}
+    >
+      {children}
+    </a>
+  )
+}
+
 function PackageCard({ pkg, index, className = '' }) {
   return (
     <FadeIn delay={index * 0.1} className="h-full w-full">
@@ -595,18 +636,13 @@ function PackageCard({ pkg, index, className = '' }) {
           <div className="package-card__footer shrink-0 border-t border-[rgba(0,0,0,0.08)]">
             <p className={`text-muted ${typeBodySm}`}>{pkg.useCase}</p>
             {pkg.learnMorePath && (
-              <a
+              <PackageLearnMoreLink
                 href={pkg.learnMorePath}
                 className={`package-card__learn-more ${typeLabel} text-ink`}
-                onClick={(event) => {
-                  if (guardCarouselTap(event)) return
-                  event.preventDefault()
-                  navigate(pkg.learnMorePath)
-                }}
               >
                 Learn More
                 <IconArrowRight className="h-3.5 w-3.5" />
-              </a>
+              </PackageLearnMoreLink>
             )}
           </div>
 
@@ -649,7 +685,7 @@ function PackagesSection({ packages }) {
           <div className="services-header mb-12 md:mb-14 lg:mb-16">
             <div className="services-header__row flex flex-col md:grid md:grid-cols-3 md:items-center md:gap-8">
               <div className="services-header__headline min-w-0 md:col-span-2">
-                <SectionHeadline className="section-headline--mobile services-section__headline">
+                <SectionHeadline className="services-section__headline">
                   Simple Packages.{' '}
                   <br className="services-section__headline-break" />
                   Everything you need.
@@ -759,7 +795,7 @@ export default function App() {
       {/* ── Recent Work ── */}
       <section id="portfolio" className="portfolio-section bg-cream px-6 pt-8 pb-8 md:px-10 md:pt-10 md:pb-16 lg:pt-12 lg:pb-20">
         <FadeIn className="portfolio-section__header mx-auto mb-10 max-w-[1360px] md:mb-12 lg:mb-14">
-          <SectionHeadline className="section-headline--mobile portfolio-section__headline mb-5">
+          <SectionHeadline className="portfolio-section__headline mb-5">
             Real spaces. Real results.
           </SectionHeadline>
           <p className={`portfolio-section__subheadline max-w-xl text-muted ${typeBody}`}>

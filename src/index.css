@@ -160,11 +160,31 @@ body {
   display: none;
 }
 
-/* Portfolio — featured editorial gallery */
+/* Homepage featured section headlines — Packages + Portfolio */
+.homepage .services-section__headline,
 .homepage .portfolio-section__headline {
-  font-weight: 700;
+  font-family: var(--font-sans);
+  font-size: 2.0125rem;
+  font-weight: 500;
+  line-height: 0.99;
+  letter-spacing: -0.025em;
 }
 
+@media (min-width: 768px) {
+  .homepage .services-section__headline,
+  .homepage .portfolio-section__headline {
+    font-size: 1.84rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .homepage .services-section__headline,
+  .homepage .portfolio-section__headline {
+    font-size: 2.3rem;
+  }
+}
+
+/* Portfolio — featured editorial gallery */
 .homepage .portfolio-gallery .portfolio-scroll {
   display: flex;
   align-items: stretch;
@@ -319,6 +339,10 @@ body {
 .homepage .package-card__learn-more:hover {
   gap: 0.625rem;
   opacity: 0.72;
+}
+
+.homepage .carousel-track.is-dragging .package-card__learn-more {
+  pointer-events: none;
 }
 
 .homepage .site-footer__heading {
@@ -627,6 +651,10 @@ body {
     text-align: left;
   }
 
+  .homepage .portfolio-section__headline {
+    text-align: center;
+  }
+
   .homepage .services-header__cta {
     display: none;
   }
@@ -673,11 +701,6 @@ body {
 
   .homepage .carousel-swipe-hint--right {
     right: 0.25rem;
-  }
-
-  .homepage .section-headline--mobile {
-    font-size: 1.75rem;
-    line-height: 0.99;
   }
 
   .homepage .carousel-track {
@@ -783,11 +806,6 @@ body {
   .homepage .package-carousel-dots span.is-active {
     background: rgba(10, 10, 10, 0.72);
     transform: scale(1.15);
-  }
-
-  .homepage .portfolio-section__headline {
-    font-size: 1.75rem;
-    line-height: 0.99;
   }
 
   .homepage .portfolio-section__header {
@@ -947,7 +965,6 @@ body {
   }
 
   .homepage .portfolio-section__headline {
-    font-size: 2.25rem;
     text-align: center;
     white-space: nowrap;
   }

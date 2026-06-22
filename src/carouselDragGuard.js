@@ -1,15 +1,21 @@
-const TAP_MOVE_THRESHOLD = 8
-const RECENTLY_DRAGGED_MS = 200
+export const TAP_MOVE_THRESHOLD = 6
+export const HORIZONTAL_DRAG_THRESHOLD = 8
+export const RECENTLY_DRAGGED_MS = 400
+export const EDGE_GESTURE_INSET = 24
 
 let isDragging = false
 let recentlyDragged = false
 let recentTimeout = null
 
+export function isEdgeGesture(startX) {
+  return startX < EDGE_GESTURE_INSET || startX > window.innerWidth - EDGE_GESTURE_INSET
+}
+
 export function markCarouselDragStart() {
   isDragging = false
 }
 
-export function markCarouselHorizontalDrag() {
+export function markCarouselDrag() {
   isDragging = true
 }
 
@@ -25,13 +31,12 @@ export function markCarouselDragEnd(didDrag) {
   isDragging = false
 }
 
-export function shouldBlockCarouselTap(totalMovement = 0) {
-  if (isDragging || recentlyDragged) return true
-  return totalMovement > TAP_MOVE_THRESHOLD
+export function shouldBlockCarouselTap() {
+  return isDragging || recentlyDragged
 }
 
-export function guardCarouselTap(event, totalMovement = 0) {
-  if (shouldBlockCarouselTap(totalMovement)) {
+export function guardCarouselTap(event) {
+  if (shouldBlockCarouselTap()) {
     event.preventDefault()
     event.stopPropagation()
     return true
@@ -39,5 +44,3 @@ export function guardCarouselTap(event, totalMovement = 0) {
 
   return false
 }
-
-export { TAP_MOVE_THRESHOLD }
