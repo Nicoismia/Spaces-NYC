@@ -183,7 +183,7 @@ const PACKAGES = [
   },
   {
     title: 'PHOTO + MATTERPORT + FLOOR PLAN',
-    price: '$429',
+    price: '$449',
     features: ['Everything in Photo + Matterport', '2D Floor Plan', 'Property Website'],
     useCase: 'Everything needed to showcase a property online, including photos, a 3D tour, and a clear floor plan.',
     popular: false,
