@@ -97,7 +97,6 @@ function AboutEditorialImage({ src, alt, aspect = 'portrait' }) {
 }
 
 const aboutIntroBodyGrid = 'mt-4 grid grid-cols-1 items-center gap-8 lg:mt-5 lg:grid-cols-12 lg:gap-10'
-const aboutEditorialGrid = 'grid grid-cols-1 items-center gap-8 lg:grid-cols-5 lg:gap-10'
 
 export default function AboutPage() {
   const { openTallyPopup } = useTallyPopup()
@@ -143,37 +142,26 @@ export default function AboutPage() {
       </section>
 
       <section className="border-t border-[#e5e5e5] px-6 py-14 md:px-10 lg:px-16 lg:py-16">
-        <FadeIn className="mx-auto max-w-7xl">
-          <div className={aboutEditorialGrid}>
-            <div className="lg:col-span-2">
-              <AboutEditorialImage
-                src="/about/story-placeholder.jpg"
-                alt="Black and white portrait of a real estate photographer seated on a stool"
-              />
-            </div>
-
-            <div className="lg:col-span-3">
-              <h2 className={`mb-6 text-ink ${typeSectionH2}`}>The Story</h2>
-              <div className={`space-y-6 text-muted ${typeBody}`}>
-                <p>
-                  Spaces NYC was founded by Nico Henriquez, a real estate photographer whose career began in Miami,
-                  Florida in 2016.
-                </p>
-                <p>
-                  Working in South Florida provided early experience photographing everything from compact urban condos
-                  to luxury waterfront residences. Those years helped shape an understanding of how strong imagery can
-                  influence the way people experience a property before ever stepping inside.
-                </p>
-                <p>
-                  In 2019, Nico relocated to New York City, where he continued working with brokers, property owners,
-                  and real estate professionals throughout Manhattan, Brooklyn, and Queens.
-                </p>
-                <p>
-                  Since then, the focus has remained consistent: creating clean, natural, and accurate visual
-                  presentations that help properties stand out while staying true to the space itself.
-                </p>
-              </div>
-            </div>
+        <FadeIn className="mx-auto max-w-3xl">
+          <h2 className={`mb-6 text-ink ${typeSectionH2}`}>The Story</h2>
+          <div className={`space-y-6 text-muted ${typeBody}`}>
+            <p>
+              Spaces NYC was founded by Nico Henriquez, a real estate photographer whose career began in Miami,
+              Florida in 2016.
+            </p>
+            <p>
+              Working in South Florida provided early experience photographing everything from compact urban condos
+              to luxury waterfront residences. Those years helped shape an understanding of how strong imagery can
+              influence the way people experience a property before ever stepping inside.
+            </p>
+            <p>
+              In 2019, Nico relocated to New York City, where he continued working with brokers, property owners,
+              and real estate professionals throughout Manhattan, Brooklyn, and Queens.
+            </p>
+            <p>
+              Since then, the focus has remained consistent: creating clean, natural, and accurate visual
+              presentations that help properties stand out while staying true to the space itself.
+            </p>
           </div>
         </FadeIn>
       </section>
