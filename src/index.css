@@ -459,30 +459,37 @@ body {
     padding-top: calc(2.75rem + env(safe-area-inset-top, 0px));
   }
 
-  .homepage .site-header--home {
+  .site-header--home,
+  .site-header--about {
     --site-header-mobile-height: calc(2.75rem + 4.6rem + 1rem + env(safe-area-inset-top, 0px));
+  }
+
+  .homepage .site-header--home {
     isolation: isolate;
     padding-bottom: 1rem;
   }
 
-  .homepage .site-header--home.site-header--menu-open {
+  .site-header--menu-open {
     z-index: 100;
     background: transparent !important;
     backdrop-filter: none !important;
+    border-bottom-color: transparent !important;
     pointer-events: none;
   }
 
-  .homepage .site-header--home.site-header--menu-open .site-header__logo,
-  .homepage .site-header--home.site-header--menu-open .site-header__menu-toggle {
+  .site-header--menu-open .site-header__logo,
+  .site-header--menu-open .site-header__menu-toggle {
     pointer-events: auto;
   }
 
-  .homepage .site-header--home .site-header__logo {
+  .site-header--home .site-header__logo,
+  .site-header--about .site-header__logo {
     position: relative;
     z-index: 100;
   }
 
-  .homepage .site-header--home .site-header__menu-toggle {
+  .site-header--home .site-header__menu-toggle,
+  .site-header--about .site-header__menu-toggle {
     position: relative;
     z-index: 110;
     touch-action: manipulation;

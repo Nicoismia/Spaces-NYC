@@ -183,7 +183,7 @@ export default function SiteHeader({ variant = 'about' }) {
       className={[
         'site-header',
         isHome ? 'site-header--home' : 'site-header--about',
-        isHome && menuOpen ? 'site-header--menu-open' : '',
+        menuOpen ? 'site-header--menu-open' : '',
         'fixed inset-x-0 top-0 z-50 flex items-center justify-between',
         'px-6 pb-5 md:px-10 lg:px-16',
         'transition-transform duration-300 ease-in-out',
@@ -195,7 +195,7 @@ export default function SiteHeader({ variant = 'about' }) {
         .join(' ')}
     >
       <a href="/" className="site-header__logo shrink-0">
-        <Logo className="h-16" invert={isHome} />
+        <Logo className="h-16" invert={isHome || menuOpen} />
       </a>
 
       <nav className="relative ml-auto hidden items-center gap-8 md:flex">
@@ -212,56 +212,55 @@ export default function SiteHeader({ variant = 'about' }) {
         ))}
       </nav>
 
-      {isHome &&
-        createPortal(
-          <AnimatePresence onExitComplete={handleMenuExitComplete}>
-            {menuOpen && (
-              <motion.div
-                key="mobile-menu-panel"
-                className="site-header__mobile-menu pointer-events-none fixed inset-x-0 top-0 bg-black/55 backdrop-blur-md md:hidden"
-                variants={menuBackdropVariants}
-                initial="initial"
-                animate="open"
-                exit="closed"
-                transition={menuTransition}
-              >
-                <nav className="site-header__mobile-nav pointer-events-auto flex flex-col px-6 pb-5">
-                  {NAV_LINKS.map((link) => (
-                    <motion.a
-                      key={link}
-                      href={navHref(link)}
-                      custom={{
-                        open: MENU_LINK_STAGGER[link] ?? 0,
-                        closed: MENU_LINK_EXIT_STAGGER[link] ?? 0,
-                      }}
-                      variants={menuLinkVariants}
-                      initial="initial"
-                      animate="open"
-                      exit="closed"
-                      className={`${typeNav} border-b border-white/10 py-4 text-white/95 transition-colors last:border-b-0 hover:text-white`}
-                      onClick={(event) => handleNavClick(event, link)}
-                    >
-                      {link}
-                    </motion.a>
-                  ))}
-                </nav>
-              </motion.div>
-            )}
-          </AnimatePresence>,
-          document.body,
-        )}
-
-      {isHome && (
-        <button
-          type="button"
-          className={`site-header__menu-toggle ${spacesBtnIcon} spaces-btn-icon -mr-1 ml-auto flex h-12 min-h-12 w-12 min-w-12 cursor-pointer items-center justify-center text-white md:hidden`}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={menuOpen}
-          onClick={handleMenuButtonClick}
-        >
-          {menuOpen ? <IconClose /> : <IconMenu />}
-        </button>
+      {createPortal(
+        <AnimatePresence onExitComplete={handleMenuExitComplete}>
+          {menuOpen && (
+            <motion.div
+              key="mobile-menu-panel"
+              className="site-header__mobile-menu pointer-events-none fixed inset-x-0 top-0 bg-black/55 backdrop-blur-md md:hidden"
+              variants={menuBackdropVariants}
+              initial="initial"
+              animate="open"
+              exit="closed"
+              transition={menuTransition}
+            >
+              <nav className="site-header__mobile-nav pointer-events-auto flex flex-col px-6 pb-5">
+                {NAV_LINKS.map((link) => (
+                  <motion.a
+                    key={link}
+                    href={navHref(link)}
+                    custom={{
+                      open: MENU_LINK_STAGGER[link] ?? 0,
+                      closed: MENU_LINK_EXIT_STAGGER[link] ?? 0,
+                    }}
+                    variants={menuLinkVariants}
+                    initial="initial"
+                    animate="open"
+                    exit="closed"
+                    className={`${typeNav} border-b border-white/10 py-4 text-white/95 transition-colors last:border-b-0 hover:text-white`}
+                    onClick={(event) => handleNavClick(event, link)}
+                  >
+                    {link}
+                  </motion.a>
+                ))}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body,
       )}
+
+      <button
+        type="button"
+        className={`site-header__menu-toggle ${spacesBtnIcon} spaces-btn-icon -mr-1 ml-auto flex h-12 min-h-12 w-12 min-w-12 cursor-pointer items-center justify-center md:hidden ${
+          isHome || menuOpen ? 'text-white' : 'text-ink'
+        }`}
+        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+        aria-expanded={menuOpen}
+        onClick={handleMenuButtonClick}
+      >
+        {menuOpen ? <IconClose /> : <IconMenu />}
+      </button>
     </header>
   )
 }
